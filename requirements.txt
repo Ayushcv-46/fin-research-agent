@@ -1,0 +1,9 @@
+langgraph
+langchain
+langchain-openai
+yfinance
+requests
+beautifulsoup4
+chromadb
+python-dotenv
+httpx
