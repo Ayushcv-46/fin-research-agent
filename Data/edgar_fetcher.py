@@ -51,5 +51,16 @@ def clean_filing_text(html: str) -> str:
         tag.decompose()
 
     text = soup.get_text(separator="\n")
-    lines = [line.strip() for line in text.split("\n") if line.strip()]
+
+    lines = []
+    for line in text.split("\n"):
+        line = line.strip()
+        if not line:
+            continue
+        # Drop XBRL/metadata junk: URLs, tag refs, or lines with no spaces
+        # (real sentences always contain spaces; XBRL refs don't)
+        if line.startswith("http") or " " not in line:
+            continue
+        lines.append(line)
+
     return "\n".join(lines)
