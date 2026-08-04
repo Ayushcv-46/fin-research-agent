@@ -1,24 +1,18 @@
-import requests
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-headers = {"User-Agent": "Ayush C V ayush4sringeri@gmail.com"}
+from Data.edgar_fetcher import get_cik, get_latest_10k, clean_filing_text
 
-# Step A: look up Apple's CIK using EDGAR's ticker-to-CIK mapping file
-mapping = requests.get(
-    "https://www.sec.gov/files/company_tickers.json", headers=headers
-).json()
+ticker = "TSLA"
 
-apple_cik = None
-for entry in mapping.values():
-    if entry["ticker"] == "AAPL":
-        apple_cik = str(entry["cik_str"]).zfill(10)  # EDGAR wants 10-digit, zero-padded
-        break
+cik = get_cik(ticker)
+print(f"CIK for {ticker}: {cik}")
 
-print("Apple CIK:", apple_cik)
+html = get_latest_10k(cik)
+print(f"Downloaded filing, raw length: {len(html)} characters")
 
-# Step B: fetch Apple's filing history using that CIK
-filings = requests.get(
-    f"https://data.sec.gov/submissions/CIK{apple_cik}.json", headers=headers
-).json()
-
-print("Company name:", filings["name"])
-print("Most recent form filed:", filings["filings"]["recent"]["form"][0])
+text = clean_filing_text(html)
+print(f"Cleaned length: {len(text)} characters")
+print("--- First 500 characters ---")
+print(text[:500])
