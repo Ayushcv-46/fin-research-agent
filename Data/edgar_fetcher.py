@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-HEADERS = {"User-Agent": "Ayush REVA University Research Project your_email@example.com"}
+HEADERS = {"User-Agent": "Ayush REVA University Research Project ayush@ayush4sringeri.com"}
 
 
 def get_cik(ticker: str) -> str:
