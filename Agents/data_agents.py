@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from typing import TypedDict, Optional
+from data.cache import get_cached, set_cached
 # pyrefly: ignore [missing-import]
 from data.market_data import get_price_snapshot, get_fundamentals
 # pyrefly: ignore [missing-import]
@@ -23,42 +24,42 @@ class GraphState(TypedDict):
     error: Optional[str]
 
 
-def data_agent_node(state: GraphState) -> dict:
-    ticker = state.get("ticker")
+def data_agent_node(state: dict) -> dict:
+    ticker = state["ticker"]
 
-    if not ticker:
-        return {"error": "No ticker provided in state."}
+    # --- price + fundamentals, cached together under one key ---
+    cache_key_market = f"market:{ticker}"
+    market_data = get_cached(cache_key_market)
 
-    price_data = get_price_snapshot(ticker)
-    fundamentals = get_fundamentals(ticker)
+    if market_data is None:
+        try:
+            price = get_price_snapshot(ticker)
+            fundamentals = get_fundamentals(ticker)
+            market_data = {"price": price, "fundamentals": fundamentals}
+            set_cached(cache_key_market, market_data)
+        except Exception as e:
+            state["error"] = f"Failed to fetch market data for {ticker}: {e}"
+            return state
 
-    if price_data.get("error") and fundamentals.get("error"):
-        return {
-            "price_data": price_data,
-            "fundamentals": fundamentals,
-            "filing_text": None,
-            "error": f"Could not fetch market data for '{ticker}'.",
-        }
+    state["price_data"] = market_data["price"]
+    state["fundamentals"] = market_data["fundamentals"]
 
-    filing_text = None
-    filing_error = None
+    # --- filing text, cached separately ---
+    cache_key_filing = f"filing:{ticker}"
+    filing_text = get_cached(cache_key_filing)
 
-    try:
-        cik = get_cik(ticker)
-        if not cik:
-            filing_error = f"No CIK found for ticker '{ticker}'."
-        else:
+    if filing_text is None:
+        try:
+            cik = get_cik(ticker)
             raw_html = get_latest_10k(cik)
             filing_text = clean_filing_text(raw_html)
-    except Exception as e:
-        filing_error = str(e)
+            set_cached(cache_key_filing, filing_text)
+        except Exception as e:
+            state["error"] = f"Failed to fetch filing for {ticker}: {e}"
+            return state
 
-    return {
-        "price_data": price_data,
-        "fundamentals": fundamentals,
-        "filing_text": filing_text,
-        "error": filing_error,
-    }
+    state["filing_text"] = filing_text
+    return state
 
 
 if __name__ == "__main__":

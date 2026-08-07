@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from Data.edgar_fetcher import get_cik, get_latest_10k, clean_filing_text
+from data.edgar_fetcher import get_cik, get_latest_10k, clean_filing_text
 
 ticker = "TSLA"
 
