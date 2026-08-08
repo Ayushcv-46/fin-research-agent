@@ -1,18 +1,22 @@
 import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import os
+
+# Add the project root to sys.path so it can find the 'data' and 'retrieval' modules
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.edgar_fetcher import get_cik, get_latest_10k, clean_filing_text
+# pyrefly: ignore [missing-import]
+from retrieval.chunker import chunk_filing
+# pyrefly: ignore [missing-import]
+from retrieval.embedder import embed_chunks
 
-ticker = "TSLA"
+cik = get_cik("AAPL")
+raw_html = get_latest_10k(cik)
+clean_text = clean_filing_text(raw_html)
 
-cik = get_cik(ticker)
-print(f"CIK for {ticker}: {cik}")
+chunks = chunk_filing(clean_text)
+print(f"Number of chunks: {len(chunks)}")
+print(chunks[0])  # peek at the first chunk
 
-html = get_latest_10k(cik)
-print(f"Downloaded filing, raw length: {len(html)} characters")
-
-text = clean_filing_text(html)
-print(f"Cleaned length: {len(text)} characters")
-print("--- First 500 characters ---")
-print(text[:500])
+embedded = embed_chunks(chunks)
+print(f"Embedding shape: {embedded[0][2].shape}")  # should be (384,)
