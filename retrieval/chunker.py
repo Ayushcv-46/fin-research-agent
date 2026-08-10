@@ -13,7 +13,7 @@ def chunk_filing(text, chunk_size=512, overlap=50):
             end = start + chunk_size
             chunk_words = words[start:end]
             chunk_text = " ".join(chunk_words)
-            all_chunks.append((chunk_text, section_label))
+            all_chunks.append({"text": chunk_text, "section": section_label})
             start = end - overlap  # move forward, but overlap a bit
     
     return all_chunks
@@ -33,4 +33,7 @@ def split_into_sections(text):
         content = parts[i + 1].strip()    # the text belonging to that item
         sections.append((label, content))
     
+    if not sections and text.strip():
+        sections.append(("Item General", text.strip()))
+
     return sections
