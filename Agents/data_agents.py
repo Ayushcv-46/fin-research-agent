@@ -14,6 +14,7 @@ from data.edgar_fetcher import get_cik, get_latest_10k, clean_filing_text
 
 class GraphState(TypedDict):
     ticker: str
+    question: str
     price_data: Optional[dict]
     fundamentals: Optional[dict]
     filing_text: Optional[str]

@@ -18,6 +18,11 @@ from retrieval.embedder import embed_text  # reuse Day 7's embedder
 _client = chromadb.PersistentClient(path="./chroma_db")
 
 
+def collection_exists(ticker: str) -> bool:
+    existing = [c.name for c in _client.list_collections()]
+    return ticker in existing
+
+
 def ingest_filing(ticker: str, chunks: list[dict]) -> None:
     """
     Ingest a list of chunk dicts into the ticker's ChromaDB collection.
