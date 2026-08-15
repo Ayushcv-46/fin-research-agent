@@ -15,5 +15,10 @@ llm = ChatOpenAI(
     timeout=15.0, max_retries=0,
 )
 
-response = llm.invoke("Say hello in one sentence.")
-print(response.content)
+def call_llm(prompt: str) -> str:
+    response = llm.invoke(prompt)
+    return response.content if hasattr(response, "content") else str(response)
+
+if __name__ == "__main__":
+    response = call_llm("Say hello in one sentence.")
+    print(response)
