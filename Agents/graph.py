@@ -1,26 +1,60 @@
 from langgraph.graph import StateGraph, END
-from agents.data_agents import data_agent_node, GraphState
-from agents.retriever_agent import retriever_agent_node
+from agents.retriever_agent import retriever_agent_node, retry_retrieval_node
+from retrieval.confidence_scorer import confidence_scorer_node  # from Day 11
+from agents.analyst_agent import analyst_agent_node  # placeholder for now
 
-graph = StateGraph(GraphState)
 
-graph.add_node("data_agent", data_agent_node)
-graph.add_node("retriever_agent", retriever_agent_node)
+def route_after_confidence_check(state: dict) -> str:
+    """
+    Conditional edge decision function.
+    Returns the NAME of the next node as a string.
+    """
+    label = state["confidence_label"]
+    retries = state.get("retry_count", 0)
 
-graph.set_entry_point("data_agent")
-graph.add_edge("data_agent", "retriever_agent")
-graph.add_edge("retriever_agent", END)
+    if label in ("Incorrect", "Ambiguous") and retries < 2:
+        return "retry_retrieval"
+    return "proceed"
 
-app = graph.compile()
 
-if __name__ == "__main__":
-    initial_state = {
-        "ticker": "AAPL",
-        "question": "What are the main risks mentioned in the filing?"
-    }
+from typing import TypedDict
 
-    result = app.invoke(initial_state)
+class GraphState(TypedDict, total=False):
+    question: str
+    ticker: str
+    current_query: str
+    retrieved_chunks: list
+    retry_count: int
+    confidence_label: str
+    confidence_reasoning: str
+    report_draft: str
+    filing_text: str
+    # DEBUG: set True in tests to force Ambiguous on attempt 1 and verify retry loop
+    _force_ambiguous_once: bool
 
-    print(f"Retrieved {len(result['retrieved_chunks'])} chunks:")
-    for chunk in result["retrieved_chunks"]:
-        print(chunk["section"], "-", chunk["text"][:100])
+def build_graph():
+    graph = StateGraph(GraphState)
+
+    graph.add_node("retriever", retriever_agent_node)
+    graph.add_node("confidence_check", confidence_scorer_node)
+    graph.add_node("retry_retrieval", retry_retrieval_node)
+    graph.add_node("analyst", analyst_agent_node)
+
+    graph.set_entry_point("retriever")
+    graph.add_edge("retriever", "confidence_check")
+
+    graph.add_conditional_edges(
+        "confidence_check",
+        route_after_confidence_check,
+        {
+            "retry_retrieval": "retry_retrieval",
+            "proceed": "analyst"
+        }
+    )
+
+    # loop back: after reformulating, go search again
+    graph.add_edge("retry_retrieval", "retriever")
+
+    graph.add_edge("analyst", END)
+
+    return graph.compile()

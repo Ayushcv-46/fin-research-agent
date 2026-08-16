@@ -6,7 +6,7 @@ import re
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from scripts.test_llm import call_llm
+from agents.llm_client import call_llm
 
 
 SCORING_PROMPT = """You are grading whether retrieved text is sufficient to answer a financial research question.
@@ -79,3 +79,14 @@ def score_retrieval(question: str, chunks: list[str]) -> dict:
 
 
     return result
+
+def confidence_scorer_node(state: dict) -> dict:
+    """
+    Evaluates the retrieved chunks against the original question.
+    Returns confidence_label (Correct/Ambiguous/Incorrect) and confidence_reasoning.
+    """
+    result = score_retrieval(state["question"], state["retrieved_chunks"])
+    return {
+        "confidence_label": result["label"],
+        "confidence_reasoning": result["reasoning"],
+    }

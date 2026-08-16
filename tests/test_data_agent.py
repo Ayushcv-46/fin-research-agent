@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from agents.data_agents import data_agent_node
+from agents.data_agent import data_agent_node
 
 def test_valid_ticker():
     state = {"ticker": "AAPL"}
