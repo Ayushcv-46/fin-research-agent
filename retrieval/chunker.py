@@ -1,5 +1,7 @@
 import re
 
+from retrieval.embedder import embed_chunks
+
 def chunk_filing(text, chunk_size=512, overlap=50):
     # Step 1: Split the filing into sections using "Item X" headers
     sections = split_into_sections(text)
@@ -16,7 +18,7 @@ def chunk_filing(text, chunk_size=512, overlap=50):
             all_chunks.append({"text": chunk_text, "section": section_label})
             start = end - overlap  # move forward, but overlap a bit
     
-    return all_chunks
+    return embed_chunks(all_chunks)
 
 
 def split_into_sections(text):
