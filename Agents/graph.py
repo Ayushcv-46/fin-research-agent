@@ -1,8 +1,7 @@
 from langgraph.graph import StateGraph, END
 from agents.retriever_agent import retriever_agent_node, retry_retrieval_node
 from retrieval.confidence_scorer import confidence_scorer_node  # from Day 11
-from agents.analyst_agent import analyst_agent_node  # placeholder for now
-
+from agents.analyst_agent import analyst_agent_node
 
 def route_after_confidence_check(state: dict) -> str:
     """
@@ -27,7 +26,7 @@ class GraphState(TypedDict, total=False):
     retry_count: int
     confidence_label: str
     confidence_reasoning: str
-    report_draft: str
+    report_draft: dict
     filing_text: str
     # DEBUG: set True in tests to force Ambiguous on attempt 1 and verify retry loop
     _force_ambiguous_once: bool
@@ -52,9 +51,18 @@ def build_graph():
         }
     )
 
-    # loop back: after reformulating, go search again
     graph.add_edge("retry_retrieval", "retriever")
 
     graph.add_edge("analyst", END)
 
     return graph.compile()
+
+
+if __name__ == "__main__":
+    graph = build_graph()  # already compiled inside build_graph()
+    result = graph.invoke({
+        "ticker": "AAPL",
+        "question": "How is Apple's growth outlook?",
+        "current_query": "How is Apple's growth outlook?",
+    })
+    print(result["report_draft"])

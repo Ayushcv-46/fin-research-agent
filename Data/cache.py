@@ -10,7 +10,7 @@ def _load_cache() -> dict:
     """Read the entire cache file from disk into a Python dict."""
     if not os.path.exists(CACHE_FILE):
         return {}
-    with open(CACHE_FILE, "r") as f:
+    with open(CACHE_FILE, "r", encoding="utf-8") as f:
         try:
             return json.load(f)
         except json.JSONDecodeError:
@@ -19,7 +19,7 @@ def _load_cache() -> dict:
 
 def _save_cache(cache: dict) -> None:
     """Write the entire cache dict back to disk as JSON."""
-    with open(CACHE_FILE, "w") as f:
+    with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(cache, f, indent=2)
 
 
