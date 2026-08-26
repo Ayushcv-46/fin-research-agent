@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from langgraph.graph import StateGraph, END
 from agents.data_agent import data_agent_node
 from agents.retriever_agent import retriever_agent_node, retry_retrieval_node

@@ -3,3 +3,4 @@ venv/
 __pycache__/
 data/cache_store.json
 chroma_db/
+test.py

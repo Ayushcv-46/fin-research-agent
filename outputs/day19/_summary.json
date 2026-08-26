@@ -1,0 +1,75 @@
+{
+  "run_at": "2026-08-26T10:50:19.994256",
+  "results": [
+    {
+      "ticker": "AAPL",
+      "status": "success",
+      "judge_overall": 8,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "JPM",
+      "status": "success",
+      "judge_overall": 9,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "XOM",
+      "status": "success",
+      "judge_overall": 10,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "UNH",
+      "status": "success",
+      "judge_overall": 7,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "GOOGL",
+      "status": "success",
+      "judge_overall": 10,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "MSFT",
+      "status": "success",
+      "judge_overall": 8,
+      "retry_count": 0,
+      "error": null
+    },
+    {
+      "ticker": "WMT",
+      "status": "success",
+      "judge_overall": 9,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "BA",
+      "status": "success",
+      "judge_overall": 10,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "F",
+      "status": "success",
+      "judge_overall": 5,
+      "retry_count": 2,
+      "error": null
+    },
+    {
+      "ticker": "PLTR",
+      "status": "success",
+      "judge_overall": 9,
+      "retry_count": 2,
+      "error": null
+    }
+  ]
+}

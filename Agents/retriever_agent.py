@@ -14,7 +14,8 @@ def retriever_agent_node(state: dict) -> dict:
     from retrieval.chunker import chunk_filing
     from retrieval.embedder import embed_chunks
 
-    collection = _client.get_or_create_collection(name=ticker)
+    collection_name = f"ticker_{ticker.lower()}"
+    collection = _client.get_or_create_collection(name=collection_name)
     if collection.count() == 0:
         print(f"[retriever_agent] Collection for {ticker} is empty. Ingesting...")
         if not state.get("filing_text"):
