@@ -8,3 +8,7 @@ chromadb
 python-dotenv
 httpx
 sentence-transformers
+ragas
+datasets
+langchain-huggingface
+langchain-community<0.4
