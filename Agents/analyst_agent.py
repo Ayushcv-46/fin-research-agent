@@ -5,8 +5,8 @@ from agents.llm_client import llm
 
 
 class ReportDraft(BaseModel):
-    bull_points: list[str] = Field(description="2-3 bullish points, each citing a source chunk in the format (Section: <section_name>)")
-    bear_points: list[str] = Field(description="2-3 bearish points, each citing a source chunk in the format (Section: <section_name>)")
+    bull_points: list[str] = Field(description="Up to 3 bullish points genuinely supported by the source chunks, each citing (Section: <section_name>). Return an empty list if no bull case is supported by the chunks.")
+    bear_points: list[str] = Field(description="Up to 3 bearish points genuinely supported by the source chunks, each citing (Section: <section_name>). Return an empty list if no bear case is supported by the chunks.")
     summary: str = Field(description="Neutral synthesis, no buy/sell recommendation")
     citations: list[str] = Field(description="List of distinct section names cited in the bull and bear points, e.g., ['Item 1A.', 'Item 7.', 'Item 8.']")
 

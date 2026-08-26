@@ -11,14 +11,14 @@ from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
-_http_client = httpx.Client(timeout=60.0)
+_http_client = httpx.Client(timeout=120.0)
 
 _llm = ChatOpenAI(
-    model="meta/llama-3.1-8b-instruct",
+    model="openai/gpt-oss-20b",
     openai_api_key=os.getenv("NVIDIA_API_KEY"),
     openai_api_base="https://integrate.api.nvidia.com/v1",
-    temperature=0.0, top_p=1, max_tokens=4096,
-    timeout=60.0, max_retries=0,
+    temperature=1.0, top_p=1.0, max_tokens=4096,
+    timeout=120.0, max_retries=0,
 )
 llm = _llm  # public alias for use with .with_structured_output() elsewhere
 

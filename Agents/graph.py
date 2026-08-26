@@ -2,6 +2,7 @@ from langgraph.graph import StateGraph, END
 from agents.retriever_agent import retriever_agent_node, retry_retrieval_node
 from retrieval.confidence_scorer import confidence_scorer_node  # from Day 11
 from agents.analyst_agent import analyst_agent_node
+from agents.judge_agent import judge_agent_node
 
 def route_after_confidence_check(state: dict) -> str:
     """
@@ -27,6 +28,7 @@ class GraphState(TypedDict, total=False):
     confidence_label: str
     confidence_reasoning: str
     report_draft: dict
+    judge_score: dict
     filing_text: str
     # DEBUG: set True in tests to force Ambiguous on attempt 1 and verify retry loop
     _force_ambiguous_once: bool
@@ -38,6 +40,7 @@ def build_graph():
     graph.add_node("confidence_check", confidence_scorer_node)
     graph.add_node("retry_retrieval", retry_retrieval_node)
     graph.add_node("analyst", analyst_agent_node)
+    graph.add_node("judge", judge_agent_node)
 
     graph.set_entry_point("retriever")
     graph.add_edge("retriever", "confidence_check")
@@ -53,7 +56,8 @@ def build_graph():
 
     graph.add_edge("retry_retrieval", "retriever")
 
-    graph.add_edge("analyst", END)
+    graph.add_edge("analyst", "judge")
+    graph.add_edge("judge", END)
 
     return graph.compile()
 
@@ -66,3 +70,4 @@ if __name__ == "__main__":
         "current_query": "How is Apple's growth outlook?",
     })
     print(result["report_draft"])
+    print(result["judge_score"])

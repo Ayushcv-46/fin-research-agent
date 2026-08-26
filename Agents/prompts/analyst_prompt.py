@@ -11,10 +11,10 @@ FILING CHUNKS:
 {chunks}
 
 INSTRUCTIONS:
-1. Bull Case (bull_points): List 2-3 genuinely positive points (real strengths, growth 
-   drivers, or competitive advantages). Each point MUST cite its source 
+1. Bull Case (bull_points): List up to 2-3 genuinely positive points (real strengths, growth 
+   drivers, or competitive advantages), if the chunks support them. Each point MUST cite its source 
    in the format (Section: <section_name>).
-2. Bear Case (bear_points): List 2-3 risk/negative points. Each point MUST cite its 
+2. Bear Case (bear_points): List up to 2-3 risk/negative points, if the chunks support them. Each point MUST cite its 
    source in the format (Section: <section_name>).
 3. Summary (summary): Write a neutral 2-3 sentence synthesis. Do NOT recommend 
    buying or selling.
@@ -26,8 +26,9 @@ INSTRUCTIONS:
    Company "may not" achieve something, or describing a threat, is NOT a 
    bull point — even if it mentions a related positive-sounding word.
 7. If the provided chunks do not contain any genuine positive/growth 
-   information, write exactly: "No significant bull case found in the 
-   provided sources." as a single point in the bull case list, instead of forcing one.
+   information, return an empty list for bull_points. Do NOT write a 
+   placeholder sentence explaining that no bull case was found — an empty 
+   list is the correct, honest output in that case.
 """
 def build_analyst_prompt(fundamentals: dict, chunks: list) -> str:
     """
