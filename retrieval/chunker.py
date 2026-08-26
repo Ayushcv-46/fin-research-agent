@@ -17,7 +17,20 @@ def chunk_filing(text, chunk_size=512, overlap=50):
             chunk_text = " ".join(chunk_words)
             all_chunks.append({"text": chunk_text, "section": section_label})
             start = end - overlap  # move forward, but overlap a bit
-    
+            
+    # Fallback for poorly segmented filings
+    if len(all_chunks) < 10 and len(text.strip()) > 0:
+        print(f"[chunk_filing] Fallback: Section-based chunking yielded only {len(all_chunks)} chunks. Using fixed-size chunking.")
+        all_chunks = []
+        words = text.split()
+        start = 0
+        while start < len(words):
+            end = start + chunk_size
+            chunk_words = words[start:end]
+            chunk_text = " ".join(chunk_words)
+            all_chunks.append({"text": chunk_text, "section": "Item General"})
+            start = end - overlap
+
     return embed_chunks(all_chunks)
 
 

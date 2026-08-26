@@ -19,8 +19,9 @@ _client = chromadb.PersistentClient(path="./chroma_db")
 
 
 def collection_exists(ticker: str) -> bool:
+    collection_name = f"ticker_{ticker.lower()}"
     existing = [c.name for c in _client.list_collections()]
-    return ticker in existing
+    return collection_name in existing
 
 
 def ingest_filing(ticker: str, chunks: list[dict]) -> None:
@@ -32,7 +33,8 @@ def ingest_filing(ticker: str, chunks: list[dict]) -> None:
 
     Idempotent: if the collection already has entries, does nothing.
     """
-    collection = _client.get_or_create_collection(name=ticker)
+    collection_name = f"ticker_{ticker.lower()}"
+    collection = _client.get_or_create_collection(name=collection_name)
 
     if collection.count() > 0:
         print(f"[ingest_filing] '{ticker}' already ingested ({collection.count()} chunks) — skipping.")
@@ -61,7 +63,8 @@ def query_filing(
         [{"text": str, "section": str, "distance": float}, ...]
     sorted by relevance (lowest distance = most similar, first).
     """
-    collection = _client.get_or_create_collection(name=ticker)
+    collection_name = f"ticker_{ticker.lower()}"
+    collection = _client.get_or_create_collection(name=collection_name)
 
     query_embedding = embed_text(query)  # same model as chunk embeddings — required
 
