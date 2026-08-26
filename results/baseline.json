@@ -1,71 +1,91 @@
 {
-  "run_at": "2026-08-26T12:35:16.370711",
+  "run_at": "2026-08-26T15:08:48.383708",
   "ragas_scores": {
-    "faithfulness": 0.555,
-    "answer_relevancy": 0.643,
-    "context_precision": 0.74,
-    "context_recall": 0.631
+    "faithfulness": 0.419,
+    "answer_relevancy": 0.693,
+    "context_precision": 0.692,
+    "context_recall": 0.718
   },
   "per_ticker": [
     {
       "ticker": "AAPL",
       "status": "success",
-      "judge_overall": 8,
-      "retry_count": 2
+      "judge_overall": 10,
+      "retry_count": 2,
+      "latency": 30.09364891052246,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "JPM",
       "status": "success",
-      "judge_overall": 10,
-      "retry_count": 2
+      "judge_overall": 8,
+      "retry_count": 2,
+      "latency": 51.975472927093506,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "XOM",
       "status": "success",
       "judge_overall": 10,
-      "retry_count": 0
+      "retry_count": 0,
+      "latency": 31.46191167831421,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "UNH",
       "status": "success",
-      "judge_overall": 8,
-      "retry_count": 2
+      "judge_overall": 10,
+      "retry_count": 2,
+      "latency": 37.01379466056824,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "GOOGL",
       "status": "success",
-      "judge_overall": 8,
-      "retry_count": 1
+      "judge_overall": 9,
+      "retry_count": 1,
+      "latency": 42.416682958602905,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "MSFT",
       "status": "success",
-      "judge_overall": 5,
-      "retry_count": 0
+      "judge_overall": 7,
+      "retry_count": 2,
+      "latency": 58.04312586784363,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "WMT",
       "status": "success",
-      "judge_overall": 8,
-      "retry_count": 2
+      "judge_overall": 7,
+      "retry_count": 1,
+      "latency": 28.099642038345337,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "BA",
       "status": "success",
-      "judge_overall": 9,
-      "retry_count": 0
+      "judge_overall": 5,
+      "retry_count": 0,
+      "latency": 20.07294774055481,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "F",
       "status": "success",
-      "judge_overall": 7,
-      "retry_count": 2
+      "judge_overall": 9,
+      "retry_count": 2,
+      "latency": 23.127820253372192,
+      "cost_estimate": 0.0
     },
     {
       "ticker": "PLTR",
       "status": "success",
       "judge_overall": 10,
-      "retry_count": 2
+      "retry_count": 2,
+      "latency": 29.59169101715088,
+      "cost_estimate": 0.0
     }
   ]
 }

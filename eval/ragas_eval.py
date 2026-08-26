@@ -36,8 +36,21 @@ _ragas_emb_wrapper = None
 def get_ragas_wrappers():
     global _ragas_llm_wrapper, _ragas_emb_wrapper
     if _ragas_llm_wrapper is None:
-        from agents.llm_client import llm as _shared_llm
-        _ragas_llm_wrapper = LangchainLLMWrapper(_shared_llm)
+        import os
+        from langchain_openai import ChatOpenAI
+        
+        ragas_llm = ChatOpenAI(
+            model="openai/gpt-oss-20b",
+            openai_api_key=os.getenv("NVIDIA_API_KEY"),
+            openai_api_base="https://integrate.api.nvidia.com/v1",
+            temperature=1.0, 
+            top_p=1.0, 
+            max_tokens=4096,
+            timeout=120.0, 
+            max_retries=2,
+            model_kwargs={"n": 1}
+        )
+        _ragas_llm_wrapper = LangchainLLMWrapper(ragas_llm)
         _ragas_emb_wrapper = LangchainEmbeddingsWrapper(
             HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
         )

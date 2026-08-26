@@ -1,4 +1,5 @@
 # eval/baseline_report.py
+import time
 import json
 import os
 from datetime import datetime
@@ -11,12 +12,14 @@ OUTPUT_DIR = "results"
 
 def run_pipeline_for_ragas(graph, ticker: str) -> dict:
     question = f"How is {ticker}'s growth outlook?"
+    start_time = time.time()
     try:
         result = graph.invoke({
             "ticker": ticker,
             "question": question,
             "current_query": question,
         })
+        latency = time.time() - start_time
         return {
             "ticker": ticker,
             "question": question,
@@ -24,10 +27,13 @@ def run_pipeline_for_ragas(graph, ticker: str) -> dict:
             "final_report": result.get("final_report", ""),
             "judge_score": result.get("judge_score", {}),
             "retry_count": result.get("retry_count", 0),
+            "latency": latency,
+            "cost_estimate": 0.0,  # Free tier / NIM token pricing to be applied later
             "status": "success",
         }
     except Exception as e:
-        return {"ticker": ticker, "status": "crash", "error": str(e)}
+        latency = time.time() - start_time
+        return {"ticker": ticker, "status": "crash", "error": str(e), "latency": latency, "cost_estimate": 0.0}
 
 
 def main():
@@ -56,6 +62,8 @@ def main():
                 "status": r["status"],
                 "judge_overall": r.get("judge_score", {}).get("overall") if r["status"] == "success" else None,
                 "retry_count": r.get("retry_count"),
+                "latency": r.get("latency"),
+                "cost_estimate": r.get("cost_estimate"),
             }
             for r in pipeline_results
         ],
