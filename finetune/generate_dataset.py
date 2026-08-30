@@ -43,15 +43,9 @@ points.
 Return JSON: {"grounding": int, "completeness": int, "clarity": int,
 "overall": int, "flagged_issues": [str]}"""
 
-TICKERS = [
-    "AAPL", "JPM", "XOM", "UNH", "GOOGL", "MSFT", "WMT", "BA", "F", "PLTR",
-    "AMZN", "META", "NVDA", "CRM", "U", "PINS",
-    "BAC", "GS", "COF", "ALLY", "DFS",
-    "TGT", "HD", "M", "GPS",
-    "CVX", "COP", "MRO", "APA",
-    "JNJ", "PFE", "TDOC", "DXCM",
-    "CAT", "GE", "MMM", "TXT"
-]
+TICKERS = ["AMGN", "BA", "F", "CAT", "GE", "MMM", "TXT", "DE", "LMT", "RTX", 
+           "GD", "HON", "UPS", "FDX", "UNP", "NEE", "DUK", "SO", "EXC", 
+           "SRE", "AEP", "VZ", "T", "TMUS", "DIS", "CMCSA"]
 
 def corrupt_report(report_draft: dict):
     """Apply ONE random, controlled corruption to a good report draft."""
@@ -104,10 +98,10 @@ def make_training_row(report_draft, chunks, ticker, corruption_type=None):
     row = {
         "instruction": INSTRUCTION_TEXT,
         "input": judge_input,
-        "output": json.dumps(judge_score)
+        "output": json.dumps(judge_score),
+        "_ticker": ticker
     }
     if corruption_type:
-        row["_ticker"] = ticker
         row["_corruption_type"] = corruption_type
     return row
 
@@ -127,7 +121,7 @@ def main():
         good_row = make_training_row(state["report_draft"], state["retrieved_chunks"], ticker)
         rows.append(good_row)
 
-        if random.random() < 0.5:
+        if random.random() < 0.7:
             bad_draft, corruption_type = corrupt_report(state["report_draft"])
             bad_row = make_training_row(bad_draft, state["retrieved_chunks"], ticker, corruption_type)
             rows.append(bad_row)
