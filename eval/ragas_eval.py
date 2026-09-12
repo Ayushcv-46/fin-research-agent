@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Optional
 
 try:
     from ragas import evaluate as ragas_evaluate
-    from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+    from ragas.metrics import faithfulness, answer_relevancy
     from ragas.llms import LangchainLLMWrapper
     from ragas.embeddings import LangchainEmbeddingsWrapper
     from langchain_huggingface import HuggingFaceEmbeddings
@@ -28,7 +28,11 @@ except ImportError as _e:
     RAGAS_AVAILABLE = False
     print(f"[WARNING] RAGAS not available ({_e}).")
 
-RAGAS_METRIC_NAMES = ["faithfulness", "answer_relevancy", "context_precision", "context_recall"]
+# Dropped context_precision and context_recall:
+# - require ground truth we don't have
+# - consistently timeout during experiment
+# - were always null in every run
+RAGAS_METRIC_NAMES = ["faithfulness", "answer_relevancy"]
 
 _ragas_llm_wrapper = None
 _ragas_emb_wrapper = None
@@ -38,17 +42,16 @@ def get_ragas_wrappers():
     if _ragas_llm_wrapper is None:
         import os
         from langchain_openai import ChatOpenAI
-        
+
         ragas_llm = ChatOpenAI(
             model="openai/gpt-oss-20b",
             openai_api_key=os.getenv("NVIDIA_API_KEY"),
             openai_api_base="https://integrate.api.nvidia.com/v1",
-            temperature=1.0, 
-            top_p=1.0, 
-            max_tokens=4096,
-            timeout=120.0, 
-            max_retries=2,
-            model_kwargs={"n": 1}
+            temperature=0.2,
+            top_p=0.7,
+            max_tokens=2048,
+            timeout=300.0,      # increased from 120s
+            max_retries=3       # increased from 2
         )
         _ragas_llm_wrapper = LangchainLLMWrapper(ragas_llm)
         _ragas_emb_wrapper = LangchainEmbeddingsWrapper(
@@ -62,11 +65,9 @@ def run_ragas_evaluation(pipeline_results: List[Dict[str, Any]]) -> Optional[Dic
     pipeline_results: list of dicts, one per ticker run, each with:
         - question: str
         - retrieved_chunks: list of {"text": str, "section": str, "distance": float}
-        - final_report: str (or report_draft joined into text)
-    No human ground truth exists, so we use the generated answer as a
-    PROXY reference — context_precision/recall become self-consistency
-    checks; faithfulness/answer_relevancy need no ground truth and are
-    the headline numbers.
+        - final_report: str
+    Runs faithfulness and answer_relevancy only.
+    context_precision/recall dropped — require ground truth and consistently timeout.
     """
     if not RAGAS_AVAILABLE:
         return {"error": "ragas not installed"}
@@ -89,14 +90,20 @@ def run_ragas_evaluation(pipeline_results: List[Dict[str, Any]]) -> Optional[Dic
 
     try:
         judge, embeddings = get_ragas_wrappers()
-        metrics = [faithfulness, answer_relevancy, context_precision, context_recall]
-        for m in metrics:
-            if hasattr(m, "reproducibility"):
-                m.reproducibility = 1
 
-        print(f"[RAGAS] evaluating {len(rows)} rows x 4 metrics...")
+        # Set reproducibility=1 at object level before passing to evaluate
+        # Forces single LLM call per metric instead of 3
+        faithfulness.reproducibility = 1
+        answer_relevancy.reproducibility = 1
+
+        metrics = [faithfulness, answer_relevancy]
+
+        print(f"[RAGAS] evaluating {len(rows)} rows x 2 metrics...")
         result = ragas_evaluate(
-            dataset=dataset, metrics=metrics, llm=judge, embeddings=embeddings,
+            dataset=dataset,
+            metrics=metrics,
+            llm=judge,
+            embeddings=embeddings,
             raise_exceptions=False,
         )
         if not isinstance(result, EvaluationResult):
@@ -117,8 +124,10 @@ def run_ragas_evaluation(pipeline_results: List[Dict[str, Any]]) -> Optional[Dic
                     continue
                 vals.append(fv)
             scores[name] = round(sum(vals) / len(vals), 3) if vals else None
+
         print(f"[RAGAS] scores: {scores}")
         return scores
+
     except Exception as e:
         import traceback
         print("[RAGAS][ERROR]")

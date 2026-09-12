@@ -43,10 +43,31 @@ def _load_finetuned_model():
 
 
 def _judge_with_api(prompt) -> dict:
-    structured_llm = llm.with_structured_output(JudgeScore)
+    json_instructions = """
+Please output ONLY a valid JSON object matching the following structure exactly. Do not wrap it in markdown block quotes or add any extra text before or after:
+{
+  "grounding": 0,
+  "completeness": 0,
+  "clarity": 0,
+  "overall": 0,
+  "flagged_issues": ["string", "string", ...]
+}
+"""
+    prompt += json_instructions
     try:
-        result = structured_llm.invoke(prompt)
-        return {"judge_score": result.model_dump()}
+        response = llm.invoke(prompt)
+        text_response = response.content if hasattr(response, 'content') else str(response)
+        
+        # Clean markdown wraps if the LLM ignores instructions
+        match = re.search(r"\{.*\}", text_response, re.DOTALL)
+        if match:
+            text_response = match.group(0)
+            
+        parsed = json.loads(text_response)
+        
+        # Validate through Pydantic
+        validated = JudgeScore(**parsed)
+        return {"judge_score": validated.model_dump()}
     except Exception as e:
         print(f"[judge_agent_node/api] LLM call failed: {e}")
         return {"judge_score": FALLBACK_JUDGE_SCORE}
@@ -110,6 +131,16 @@ def _judge_with_finetuned(prompt) -> dict:
 
 
 def judge_agent_node(state: dict) -> dict:
+    if os.environ.get("SKIP_JUDGE", "false") == "true":
+        return {
+            "judge_score": {
+                "grounding": 0,
+                "completeness": 0, 
+                "clarity": 0,
+                "overall": 0,
+                "flagged_issues": ["[skipped during experiment]"]
+            }
+        }
     report_draft = state.get("report_draft", {})
     retrieved_chunks = state.get("retrieved_chunks", [])
     prompt = build_judge_prompt(report_draft, retrieved_chunks)

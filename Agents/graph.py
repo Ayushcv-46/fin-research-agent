@@ -13,8 +13,14 @@ from agents.report_agent import report_agent_node
 def route_after_confidence_check(state: dict) -> str:
     """
     Conditional edge decision function.
-    Returns the NAME of the next node as a string.
+    In fixed mode: scoring still runs but we always proceed (never retry).
+    In adaptive mode: original Day 12 retry logic applies.
     """
+    # Fixed mode — ignore the confidence label, always proceed
+    if os.environ.get("RETRIEVAL_MODE", "adaptive") == "fixed":
+        return "proceed"
+
+    # Adaptive mode — original retry logic
     label = state["confidence_label"]
     retries = state.get("retry_count", 0)
 

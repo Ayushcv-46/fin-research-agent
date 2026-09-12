@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field
+import json
+import re
 from agents.prompts.analyst_prompt import build_analyst_prompt
 from agents.data_agent import GraphState  # shared state schema
 from agents.llm_client import llm
@@ -25,16 +27,31 @@ def analyst_agent_node(state: GraphState) -> dict:
         return {"report_draft": draft.model_dump()}
 
     prompt = build_analyst_prompt(fundamentals, chunks)
-    llm_with_schema = llm.with_structured_output(ReportDraft)
+    
+    json_instructions = """
+Please output ONLY a valid JSON object matching the following structure exactly. Do not wrap it in markdown block quotes or add any extra text before or after:
+{
+  "bull_points": ["string", "string", ...],
+  "bear_points": ["string", "string", ...],
+  "summary": "string",
+  "citations": ["string", "string", ...]
+}
+"""
+    prompt += json_instructions
 
     try:
-        report_draft = llm_with_schema.invoke(prompt)
-        if isinstance(report_draft, ReportDraft):
-            report_dict = report_draft.model_dump()
-        elif isinstance(report_draft, dict):
-            report_dict = report_draft
-        else:
-            raise ValueError(f"Unexpected response type: {type(report_draft)}")
+        response = llm.invoke(prompt)
+        text_response = response.content if hasattr(response, 'content') else str(response)
+        
+        # Clean markdown wraps if the LLM ignores instructions
+        match = re.search(r"\{.*\}", text_response, re.DOTALL)
+        if match:
+            text_response = match.group(0)
+            
+        parsed_dict = json.loads(text_response)
+        
+        # Validate through Pydantic to ensure all fields are present
+        report_dict = ReportDraft(**parsed_dict).model_dump()
     except Exception as e:
         report_dict = ReportDraft(
             bull_points=[], bear_points=[],

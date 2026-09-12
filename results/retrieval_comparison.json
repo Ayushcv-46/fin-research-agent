@@ -1,0 +1,190 @@
+{
+  "results": [
+    {
+      "ticker": "AAPL",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.601,
+      "retry_count": 0
+    },
+    {
+      "ticker": "TSLA",
+      "mode": "fixed",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.752,
+      "retry_count": 0
+    },
+    {
+      "ticker": "NFLX",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.715,
+      "retry_count": 0
+    },
+    {
+      "ticker": "GOOGL",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.776,
+      "retry_count": 0
+    },
+    {
+      "ticker": "META",
+      "mode": "fixed",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.682,
+      "retry_count": 0
+    },
+    {
+      "ticker": "AMZN",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.698,
+      "retry_count": 0
+    },
+    {
+      "ticker": "MSFT",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.681,
+      "retry_count": 0
+    },
+    {
+      "ticker": "NVDA",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.717,
+      "retry_count": 0
+    },
+    {
+      "ticker": "WMT",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.587,
+      "retry_count": 0
+    },
+    {
+      "ticker": "PFE",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.668,
+      "retry_count": 0
+    },
+    {
+      "ticker": "DIS",
+      "mode": "fixed",
+      "faithfulness": null,
+      "answer_relevancy": 0.725,
+      "retry_count": 0
+    },
+    {
+      "ticker": "XOM",
+      "mode": "fixed",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.795,
+      "retry_count": 0
+    },
+    {
+      "ticker": "AAPL",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.623,
+      "retry_count": 2
+    },
+    {
+      "ticker": "TSLA",
+      "mode": "adaptive",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.733,
+      "retry_count": 1
+    },
+    {
+      "ticker": "NFLX",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.793,
+      "retry_count": 0
+    },
+    {
+      "ticker": "GOOGL",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.766,
+      "retry_count": 0
+    },
+    {
+      "ticker": "META",
+      "mode": "adaptive",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.693,
+      "retry_count": 1
+    },
+    {
+      "ticker": "AMZN",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.726,
+      "retry_count": 0
+    },
+    {
+      "ticker": "MSFT",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.793,
+      "retry_count": 0
+    },
+    {
+      "ticker": "NVDA",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.714,
+      "retry_count": 0
+    },
+    {
+      "ticker": "WMT",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.729,
+      "retry_count": 2
+    },
+    {
+      "ticker": "PFE",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.659,
+      "retry_count": 2
+    },
+    {
+      "ticker": "DIS",
+      "mode": "adaptive",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.759,
+      "retry_count": 2
+    },
+    {
+      "ticker": "XOM",
+      "mode": "adaptive",
+      "faithfulness": null,
+      "answer_relevancy": 0.697,
+      "retry_count": 0
+    }
+  ],
+  "summary": {
+    "fixed": {
+      "tickers_attempted": 12,
+      "tickers_scored": 3,
+      "avg_faithfulness": 0.0,
+      "avg_answer_relevancy": 0.743,
+      "avg_retry_count": 0.0,
+      "retry_rate_pct": 0.0
+    },
+    "adaptive": {
+      "tickers_attempted": 12,
+      "tickers_scored": 3,
+      "avg_faithfulness": 0.0,
+      "avg_answer_relevancy": 0.7283,
+      "avg_retry_count": 0.8333,
+      "retry_rate_pct": 50.0
+    }
+  }
+}
