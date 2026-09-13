@@ -1,0 +1,170 @@
+{
+  "outputs": [
+    {
+      "ticker": "AAPL",
+      "report_draft": {
+        "bull_points": [
+          "Apple continues to launch new product lines each quarter, indicating ongoing innovation and potential revenue growth. (Item 7.)",
+          "Apple\u2019s end\u2011to\u2011end design and development of hardware, operating systems, and software applications gives it a competitive advantage in product integration. (Item 1A.)",
+          "Apple holds a significant portfolio of patents, trademarks, and copyrights, strengthening its intellectual property protection. (Item 1A.)"
+        ],
+        "bear_points": [
+          "The company\u2019s reliance on single or limited sources for critical components exposes it to supply\u2011chain disruptions that could delay production and increase costs. (Item 1A.)",
+          "New U.S. tariffs and potential reciprocal measures could materially impact Apple\u2019s supply chain, pricing, and gross margins. (Item 7.)",
+          "Intense competition from companies with significant technical, marketing, and distribution resources could erode Apple\u2019s market share and pressure margins. (Item 1A.)"
+        ],
+        "summary": "Apple demonstrates strong product innovation and vertical integration, supported by a robust IP portfolio, but faces supply\u2011chain, tariff, and competitive risks that could affect its financial performance.",
+        "citations": [
+          "Item 7.",
+          "Item 1A."
+        ]
+      }
+    },
+    {
+      "ticker": "TSLA",
+      "report_draft": {
+        "bull_points": [],
+        "bear_points": [],
+        "summary": "Analyst generation failed: Expecting value: line 1 column 1 (char 0)",
+        "citations": []
+      }
+    },
+    {
+      "ticker": "NFLX",
+      "report_draft": {
+        "bull_points": [
+          "Expansion into games and live programming diversifies content offerings and can attract new members. (Section: Item 1A.)",
+          "Partnerships with cable, satellite, and telecommunications operators increase accessibility by delivering the service on a wide range of devices. (Section: Item 1A.)",
+          "Ongoing expansion of consumer products and live experiences provides additional revenue streams and growth opportunities. (Section: Item 1A.)"
+        ],
+        "bear_points": [
+          "High fixed content costs and limited flexibility in adjusting pricing or content could compress margins if growth slows. (Section: Item 1A.)",
+          "Significant debt obligations, including $14.5\u202fbillion of senior notes, pose a risk to liquidity if cash flows are insufficient to service debt. (Section: Item 1A.)",
+          "Intense competition from other entertainment providers, piracy, and alternative entertainment options could erode membership growth and retention. (Section: Item 1A.)"
+        ],
+        "summary": "The company is pursuing growth through diversified content, strategic partnerships, and new product offerings, while facing risks related to fixed content costs, substantial debt, and competitive pressures.",
+        "citations": [
+          "Item 1A."
+        ]
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "report_draft": {
+        "bull_points": [],
+        "bear_points": [],
+        "summary": "Analyst generation failed: Expecting value: line 1 column 1 (char 0)",
+        "citations": []
+      }
+    },
+    {
+      "ticker": "META",
+      "report_draft": {
+        "bull_points": [
+          "Revenue grew 22% YoY to $200.97B in 2025, driven by higher advertising revenue and increased ad impressions and pricing. (Section: Item 7.)",
+          "Family of Apps segment income from operations increased 18% YoY to $15.36B, reflecting strong advertising performance. (Section: Item 7.)",
+          "Interest and other income rose 107% YoY to $1.37B, largely from unrealized gains on marketable and non-marketable equity investments. (Section: Item 7.)"
+        ],
+        "bear_points": [
+          "Regulatory and privacy risks, including GDPR, DMA, DSA, and other evolving laws, could materially affect the company's ability to operate and monetize its platforms. (Section: Item 1A.)",
+          "Legal-related costs increased significantly, with a $1.55B decrease in accrued losses reversed, leading to higher general and administrative expenses and potential future litigation exposure. (Section: Item 7.)",
+          "Risks to product offerings include potential loss of user engagement, reduced advertiser spending, and challenges in launching new products or maintaining existing ones. (Section: Item 1A.)"
+        ],
+        "summary": "Meta Platforms reported strong revenue growth in 2025, largely driven by advertising, and saw significant increases in operating income from its core Family of Apps segment. However, the company faces regulatory, legal, and product-related risks that could impact future performance. Overall, the company demonstrates robust financial results but must navigate several material uncertainties.",
+        "citations": [
+          "Item 7.",
+          "Item 1A."
+        ]
+      }
+    },
+    {
+      "ticker": "AMZN",
+      "report_draft": {
+        "bull_points": [],
+        "bear_points": [],
+        "summary": "Analyst generation failed: Expecting value: line 1 column 1 (char 0)",
+        "citations": []
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "report_draft": {
+        "bull_points": [],
+        "bear_points": [],
+        "summary": "Analyst generation failed: Expecting value: line 1 column 1 (char 0)",
+        "citations": []
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "report_draft": {
+        "bull_points": [],
+        "bear_points": [],
+        "summary": "Analyst generation failed: Expecting value: line 1 column 1 (char 0)",
+        "citations": []
+      }
+    },
+    {
+      "ticker": "WMT",
+      "report_draft": {
+        "bull_points": [
+          "Walmart\u2019s omnichannel model integrates retail stores and eCommerce to provide a seamless customer experience, driving growth across its U.S., International, and Sam\u2019s Club segments. (Section: Item 1A.)",
+          "The company\u2019s sustainability initiatives\u2014reducing greenhouse gas emissions, regenerating natural resources, and cutting product and packaging waste\u2014support long\u2011term value creation and strengthen stakeholder trust. (Section: Item 1A.)",
+          "Walmart\u2019s workforce strategy emphasizes developing a digitally skilled, AI\u2011enabled workforce, aligning talent capabilities with evolving business needs and fostering future\u2011ready capabilities. (Section: Item 1A.)"
+        ],
+        "bear_points": [
+          "Certain Walmart systems and third\u2011party service providers have experienced cybersecurity incidents and threats, creating a risk that future incidents could materially affect the company. (Section: Item 3.)",
+          "Management acknowledges that projections of internal control effectiveness are subject to the risk that controls may become inadequate due to changing conditions or deteriorating compliance, potentially impacting financial reporting. (Section: Item 3.)"
+        ],
+        "summary": "Walmart maintains a robust omnichannel strategy, sustainability focus, and workforce development plan, while facing cybersecurity and internal control risks that could impact operations and reporting. These factors collectively shape the company\u2019s competitive positioning and risk profile.",
+        "citations": [
+          "Item 1A.",
+          "Item 3."
+        ]
+      }
+    },
+    {
+      "ticker": "PFE",
+      "report_draft": {
+        "bull_points": [
+          "International revenue growth and presence in emerging markets, with 41% to 53% of total revenue coming from outside the U.S. (Section: Item 1A.)",
+          "Strategic focus on emerging markets and urbanization/middle\u2011class growth opportunities driving future expansion (Section: Item 1A.)"
+        ],
+        "bear_points": [
+          "Payor cost\u2011containment strategies by PBMs, MCOs, and other third\u2011party payors increase pricing pressure and risk loss of formulary placement (Section: Item 1A.)",
+          "Climate change transitional and physical risks could raise operating costs and disrupt supply chains (Section: Item 1A.)"
+        ],
+        "summary": "Pfizer benefits from a diversified global footprint with substantial revenue from emerging markets and a strategy targeting urbanization and middle\u2011class growth. At the same time, the company faces significant headwinds from tightening payer cost\u2011containment measures and climate\u2011related risks that could affect pricing and supply chain stability. These factors together shape a balanced view of the company\u2019s prospects.",
+        "citations": [
+          "Item 1A."
+        ]
+      }
+    },
+    {
+      "ticker": "DIS",
+      "report_draft": {
+        "bull_points": [],
+        "bear_points": [],
+        "summary": "Analyst generation failed: Expecting value: line 1 column 1 (char 0)",
+        "citations": []
+      }
+    },
+    {
+      "ticker": "XOM",
+      "report_draft": {
+        "bull_points": [
+          "The Corporation\u2019s financial strength enables it to make large, long\u2011term capital expenditures, with cash capex of $29.0\u202fbillion in 2025 and planned $27\u201329\u202fbillion investment in 2026.",
+          "The Corporation\u2019s large and diverse portfolio of development projects and exploration opportunities helps mitigate overall political and technical risks to its upstream segment and cash flow."
+        ],
+        "bear_points": [
+          "Cybersecurity disruptions could cause physical harm, damage assets, compromise business systems, and result in significant remediation costs and regulatory actions.",
+          "Operations may be disrupted by severe weather events, such as hurricanes, which can damage offshore production facilities and coastal refining plants."
+        ],
+        "summary": "ExxonMobil demonstrates strong financial capacity and a diversified upstream portfolio, supporting continued investment. However, the company faces significant operational risks from cybersecurity threats and severe weather events. These factors should be considered when evaluating the company\u2019s risk profile.",
+        "citations": [
+          "Item 1A."
+        ]
+      }
+    }
+  ]
+}

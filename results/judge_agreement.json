@@ -1,0 +1,465 @@
+{
+  "entries": [
+    {
+      "ticker": "AAPL",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 4,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 7 but no source chunk found.",
+          "Bull point 2 cites Item 1A but no source chunk found.",
+          "Bull point 3 cites Item 1A but no source chunk found.",
+          "Bear point 1 cites Item 1A but no source chunk found.",
+          "Bear point 2 cites Item 7 but no source chunk found.",
+          "Bear point 3 cites Item 1A but no source chunk found.",
+          "Summary cites no source chunk."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 6,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 7 but no source chunk available.",
+          "Bull point 2 cites Item 1A but no source chunk available.",
+          "Bull point 3 cites Item 1A but no source chunk available.",
+          "Bear point 1 cites Item 1A but no source chunk available.",
+          "Bear point 2 cites Item 7 but no source chunk available.",
+          "Bear point 3 cites Item 1A but no source chunk available."
+        ]
+      },
+      "score_diffs": {
+        "grounding": 0,
+        "completeness": 0,
+        "clarity": -2,
+        "overall": 0
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "TSLA",
+      "api_scores": {
+        "grounding": 2,
+        "completeness": 4,
+        "clarity": 3,
+        "overall": 2,
+        "flagged_issues": [
+          "Summary contains error message, not grounded to source",
+          "No citations provided",
+          "Report lacks bull points and bear points",
+          "Source chunks missing"
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 3,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull points list is empty, no claims to evaluate.",
+          "Bear points list is empty, no claims to evaluate.",
+          "Summary contains an error message, not grounded in source material.",
+          "Citations list is empty, no source support for any claim."
+        ]
+      },
+      "score_diffs": {
+        "grounding": -1,
+        "completeness": -1,
+        "clarity": 0,
+        "overall": -2
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "NFLX",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 4,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 1A but no source chunk provided.",
+          "Bull point 2 cites Item 1A but no source chunk provided.",
+          "Bull point 3 cites Item 1A but no source chunk provided.",
+          "Bear point 1 cites Item 1A but no source chunk provided.",
+          "Bear point 2 cites Item 1A but no source chunk provided.",
+          "Bear point 3 cites Item 1A but no source chunk provided.",
+          "Summary cites Item 1A but no source chunk provided."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 6,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 1A. but no source chunk provided",
+          "Bull point 2 cites Item 1A. but no source chunk provided",
+          "Bull point 3 cites Item 1A. but no source chunk provided",
+          "Bear point 1 cites Item 1A. but no source chunk provided",
+          "Bear point 2 cites Item 1A. but no source chunk provided",
+          "Bear point 3 cites Item 1A. but no source chunk provided",
+          "Summary cites Item 1A. but no source chunk provided"
+        ]
+      },
+      "score_diffs": {
+        "grounding": 0,
+        "completeness": 0,
+        "clarity": -2,
+        "overall": 0
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "GOOGL",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 2,
+        "clarity": 2,
+        "overall": 3,
+        "flagged_issues": [
+          "Report contains no bullet points or bear points",
+          "Report summary indicates generation failure",
+          "Citations are missing"
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 0,
+        "completeness": 0,
+        "clarity": 0,
+        "overall": 0,
+        "flagged_issues": [
+          "Report contains no bullet points or summary content",
+          "Summary indicates generation failure",
+          "No citations provided"
+        ]
+      },
+      "score_diffs": {
+        "grounding": 3,
+        "completeness": 2,
+        "clarity": 2,
+        "overall": 3
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "META",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 5,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 7 but no source chunk available",
+          "Bull point 2 cites Item 7 but no source chunk available",
+          "Bull point 3 cites Item 7 but no source chunk available",
+          "Bear point 1 cites Item 1A but no source chunk available",
+          "Bear point 2 cites Item 7 but no source chunk available",
+          "Bear point 3 cites Item 1A but no source chunk available",
+          "Summary claims are unsupported due to missing source chunks"
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 2,
+        "completeness": 2,
+        "clarity": 3,
+        "overall": 2,
+        "flagged_issues": [
+          "Bull point 1 cites Item 7 but no source chunk retrieved.",
+          "Bull point 2 cites Item 7 but no source chunk retrieved.",
+          "Bull point 3 cites Item 7 but no source chunk retrieved.",
+          "Bear point 1 cites Item 1A but no source chunk retrieved.",
+          "Bear point 2 cites Item 7 but no source chunk retrieved.",
+          "Bear point 3 cites Item 1A but no source chunk retrieved.",
+          "Summary cites Item 7 and Item 1A but no source chunk retrieved.",
+          "Citations list includes Item 7 and Item 1A but no source chunk retrieved."
+        ]
+      },
+      "score_diffs": {
+        "grounding": 1,
+        "completeness": 3,
+        "clarity": 2,
+        "overall": 2
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "AMZN",
+      "api_scores": {
+        "grounding": 0,
+        "completeness": 0,
+        "clarity": 0,
+        "overall": 0,
+        "flagged_issues": [
+          "Report contains no bullet points or bear points.",
+          "Summary indicates generation failure.",
+          "No citations provided.",
+          "No source chunks to support claims."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 1,
+        "completeness": 1,
+        "clarity": 1,
+        "overall": 1,
+        "flagged_issues": [
+          "Report contains no bullet points or bear points",
+          "Summary indicates generation failure",
+          "No citations provided"
+        ]
+      },
+      "score_diffs": {
+        "grounding": -1,
+        "completeness": -1,
+        "clarity": -1,
+        "overall": -1
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "MSFT",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 5,
+        "overall": 4,
+        "flagged_issues": [
+          "Report contains no bullet points or citations, so no grounding can be established.",
+          "Summary indicates generation failure, providing no substantive content.",
+          "No source chunks were retrieved, making the report incomplete.",
+          "Report lacks any substantive analysis, rendering it incomplete.",
+          "Clarity is compromised due to absence of structured content."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 1,
+        "completeness": 1,
+        "clarity": 1,
+        "overall": 1,
+        "flagged_issues": [
+          "Report contains no bullet points or summary content.",
+          "Report cites no source chunks.",
+          "Report is empty and provides no analysis."
+        ]
+      },
+      "score_diffs": {
+        "grounding": 2,
+        "completeness": 4,
+        "clarity": 4,
+        "overall": 3
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "NVDA",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 3,
+        "overall": 4,
+        "flagged_issues": [
+          "Report contains no bullet points or summary content.",
+          "Citations list is empty despite summary.",
+          "Summary indicates generation failure, not a valid analysis."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 3,
+        "overall": 3,
+        "flagged_issues": [
+          "Report contains no bullet points or bear points, providing no substantive claims.",
+          "Summary indicates a generation failure and contains no actionable content.",
+          "No source citations are provided, so all claims (none) are ungrounded.",
+          "The report is incomplete, lacking any analysis or risk/opportunity discussion."
+        ]
+      },
+      "score_diffs": {
+        "grounding": 0,
+        "completeness": 0,
+        "clarity": 0,
+        "overall": 1
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "WMT",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 3,
+        "clarity": 4,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 1A but no source chunk provided.",
+          "Bull point 2 cites Item 1A but no source chunk provided.",
+          "Bull point 3 cites Item 1A but no source chunk provided.",
+          "Bear point 1 cites Item 3 but no source chunk provided.",
+          "Bear point 2 cites Item 3 but no source chunk provided."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 2,
+        "completeness": 3,
+        "clarity": 4,
+        "overall": 3,
+        "flagged_issues": [
+          "Bull point 1 cites Item 1A. but no source chunk provided.",
+          "Bull point 2 cites Item 1A. but no source chunk provided.",
+          "Bull point 3 cites Item 1A. but no source chunk provided.",
+          "Bear point 1 cites Item 3. but no source chunk provided.",
+          "Bear point 2 cites Item 3. but no source chunk provided."
+        ]
+      },
+      "score_diffs": {
+        "grounding": 1,
+        "completeness": 0,
+        "clarity": 0,
+        "overall": 1
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "PFE",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 3,
+        "clarity": 3,
+        "overall": 3,
+        "flagged_issues": [
+          "Bull point 1 cites Item 1A but no source chunk provided.",
+          "Bull point 2 cites Item 1A but no source chunk provided.",
+          "Bear point 1 cites Item 1A but no source chunk provided.",
+          "Bear point 2 cites Item 1A but no source chunk provided."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 4,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites Item 1A but no source content provided",
+          "Bull point 2 cites Item 1A but no source content provided",
+          "Bear point 1 cites Item 1A but no source content provided",
+          "Bear point 2 cites Item 1A but no source content provided",
+          "Summary cites Item 1A but no source content provided",
+          "Citations list only Item 1A but no source chunks retrieved"
+        ]
+      },
+      "score_diffs": {
+        "grounding": 0,
+        "completeness": -2,
+        "clarity": -1,
+        "overall": -1
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "DIS",
+      "api_scores": {
+        "grounding": 2,
+        "completeness": 3,
+        "clarity": 2,
+        "overall": 2,
+        "flagged_issues": [
+          "Summary states analyst generation failed but no source chunk or citation is provided",
+          "Report contains no bullet points or bear points, indicating incomplete coverage",
+          "Citations list is empty despite the summary claim"
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 0,
+        "completeness": 0,
+        "clarity": 0,
+        "overall": 0,
+        "flagged_issues": [
+          "Report contains no bullet points or bear points",
+          "Summary indicates generation failure",
+          "No citations provided",
+          "No source chunks retrieved"
+        ]
+      },
+      "score_diffs": {
+        "grounding": 2,
+        "completeness": 3,
+        "clarity": 2,
+        "overall": 2
+      },
+      "both_flagged": true
+    },
+    {
+      "ticker": "XOM",
+      "api_scores": {
+        "grounding": 3,
+        "completeness": 4,
+        "clarity": 5,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 cites cash capex $29.0b in 2025 but no source chunk provides that figure.",
+          "Bull point 2 cites $27\u201329b investment in 2026 but no source chunk supports it.",
+          "Bear point 1 claims cybersecurity disruptions could cause physical harm but no source chunk confirms this.",
+          "Bear point 2 claims severe weather events could disrupt operations but no source chunk confirms it.",
+          "Citation 'Item 1A' is not present in the retrieved source chunks."
+        ]
+      },
+      "finetuned_scores": {
+        "grounding": 3,
+        "completeness": 5,
+        "clarity": 5,
+        "overall": 4,
+        "flagged_issues": [
+          "Bull point 1 ungrounded: no source chunk to support cash capex claim",
+          "Bull point 2 ungrounded: no source chunk to support portfolio diversification claim",
+          "Bear point 1 ungrounded: no source chunk to support cybersecurity risk claim",
+          "Bear point 2 ungrounded: no source chunk to support severe weather risk claim",
+          "Citation Item 1A ungrounded: no source chunk provided"
+        ]
+      },
+      "score_diffs": {
+        "grounding": 0,
+        "completeness": -1,
+        "clarity": 0,
+        "overall": 0
+      },
+      "both_flagged": true
+    }
+  ],
+  "aggregate_stats": {
+    "tickers_scored": 12,
+    "pearson_correlation": {
+      "grounding": {
+        "correlation": 0.335,
+        "p_value": 0.287
+      },
+      "completeness": {
+        "correlation": 0.498,
+        "p_value": 0.1
+      },
+      "clarity": {
+        "correlation": 0.541,
+        "p_value": 0.069
+      },
+      "overall": {
+        "correlation": 0.398,
+        "p_value": 0.201
+      }
+    },
+    "pct_within_1_point": {
+      "grounding": 75.0,
+      "completeness": 58.3,
+      "clarity": 50.0,
+      "overall": 58.3
+    },
+    "pct_within_2_points": {
+      "grounding": 91.7,
+      "completeness": 75.0,
+      "clarity": 91.7,
+      "overall": 83.3
+    },
+    "pct_both_flagged_issues": 100.0
+  }
+}
