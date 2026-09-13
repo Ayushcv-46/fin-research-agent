@@ -11,4 +11,4 @@ sentence-transformers
 ragas
 datasets
 langchain-huggingface
-langchain-community<0.4
+langchain-community<0.4matplotlib==3.11.2
