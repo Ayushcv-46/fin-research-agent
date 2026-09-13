@@ -1,0 +1,138 @@
+{
+  "api": [
+    {
+      "ticker": "AAPL",
+      "latency_sec": 7.27,
+      "est_cost_usd": 0.000138
+    },
+    {
+      "ticker": "TSLA",
+      "latency_sec": 3.57,
+      "est_cost_usd": 8.4e-05
+    },
+    {
+      "ticker": "NFLX",
+      "latency_sec": 5.37,
+      "est_cost_usd": 0.000138
+    },
+    {
+      "ticker": "GOOGL",
+      "latency_sec": 3.03,
+      "est_cost_usd": 8.4e-05
+    },
+    {
+      "ticker": "META",
+      "latency_sec": 26.91,
+      "est_cost_usd": 0.000153
+    },
+    {
+      "ticker": "AMZN",
+      "latency_sec": 5.22,
+      "est_cost_usd": 8.4e-05
+    },
+    {
+      "ticker": "MSFT",
+      "latency_sec": 7.32,
+      "est_cost_usd": 8.4e-05
+    },
+    {
+      "ticker": "NVDA",
+      "latency_sec": 5.33,
+      "est_cost_usd": 8.4e-05
+    },
+    {
+      "ticker": "WMT",
+      "latency_sec": 6.67,
+      "est_cost_usd": 0.000152
+    },
+    {
+      "ticker": "PFE",
+      "latency_sec": 8.42,
+      "est_cost_usd": 0.000131
+    },
+    {
+      "ticker": "DIS",
+      "latency_sec": 9.18,
+      "est_cost_usd": 8.4e-05
+    },
+    {
+      "ticker": "XOM",
+      "latency_sec": 5.58,
+      "est_cost_usd": 0.000132
+    }
+  ],
+  "finetuned": [
+    {
+      "ticker": "AAPL",
+      "latency_sec": 9.23,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "TSLA",
+      "latency_sec": 19.72,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "NFLX",
+      "latency_sec": 10.1,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "GOOGL",
+      "latency_sec": 9.42,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "META",
+      "latency_sec": 3.71,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "AMZN",
+      "latency_sec": 45.69,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "MSFT",
+      "latency_sec": 4.48,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "NVDA",
+      "latency_sec": 5.57,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "WMT",
+      "latency_sec": 8.81,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "PFE",
+      "latency_sec": 15.52,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "DIS",
+      "latency_sec": 3.45,
+      "est_cost_usd": 0.0
+    },
+    {
+      "ticker": "XOM",
+      "latency_sec": 6.04,
+      "est_cost_usd": 0.0
+    }
+  ],
+  "summary": {
+    "api": {
+      "avg_latency_sec": 7.82,
+      "avg_cost_usd": 0.000112,
+      "n": 12
+    },
+    "finetuned": {
+      "avg_latency_sec": 11.81,
+      "avg_cost_usd": 0.0,
+      "n": 12
+    }
+  }
+}
