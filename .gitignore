@@ -6,3 +6,4 @@ chroma_db/
 test.py
 toy_adapter/
 outputs_toy/
+.coverage
