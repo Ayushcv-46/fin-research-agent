@@ -7,3 +7,5 @@ test.py
 toy_adapter/
 outputs_toy/
 .coverage
+data/app.db
+
