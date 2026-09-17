@@ -25,3 +25,17 @@ def save_report(graph_state: dict) -> Report:
         return report
     finally:
         session.close()
+def get_reports(limit: int = 20) -> list[Report]:
+    session = SessionLocal()
+    try:
+        return session.query(Report).order_by(Report.timestamp.desc()).limit(limit).all()
+    finally:
+        session.close()
+
+
+def get_report_by_id(report_id: int) -> Report | None:
+    session = SessionLocal()
+    try:
+        return session.query(Report).filter(Report.id == report_id).first()
+    finally:
+        session.close()
