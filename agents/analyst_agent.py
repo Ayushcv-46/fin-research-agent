@@ -1,33 +1,41 @@
 from pydantic import BaseModel, Field
-import json
-import re
 from agents.prompts.analyst_prompt import build_analyst_prompt
 from agents.data_agent import GraphState  # shared state schema
 from agents.llm_client import llm
+from agents.json_utils import invoke_json
+
 
 
 class ReportDraft(BaseModel):
-    bull_points: list[str] = Field(description="Up to 3 bullish points genuinely supported by the source chunks, each citing (Section: <section_name>). Return an empty list if no bull case is supported by the chunks.")
-    bear_points: list[str] = Field(description="Up to 3 bearish points genuinely supported by the source chunks, each citing (Section: <section_name>). Return an empty list if no bear case is supported by the chunks.")
+    bull_points: list[str] = Field(
+        default_factory=list,
+        description="Up to 3 bullish points genuinely supported by the source chunks, each citing (Section: <section_name>).",
+    )
+    bear_points: list[str] = Field(
+        default_factory=list,
+        description="Up to 3 bearish points genuinely supported by the source chunks, each citing (Section: <section_name>).",
+    )
     summary: str = Field(description="Neutral synthesis, no buy/sell recommendation")
-    citations: list[str] = Field(description="List of distinct section names cited in the bull and bear points, e.g., ['Item 1A.', 'Item 7.', 'Item 8.']")
+    citations: list[str] = Field(
+        default_factory=list,
+        description="List of distinct section names cited in the bull and bear points, e.g., ['Item 1A.', 'Item 7.', 'Item 8.']",
+    )
 
 
 def analyst_agent_node(state: GraphState) -> dict:
-    chunks = state["retrieved_chunks"]
-    fundamentals = state.get("fundamentals", {})
+    chunks = state.get("retrieved_chunks") or []
+    fundamentals = state.get("fundamentals") or {}
 
     if not chunks:
         draft = ReportDraft(
             bull_points=[],
             bear_points=[],
             summary="Insufficient filing data retrieved to generate analysis.",
-            citations=[]
+            citations=[],
         )
         return {"report_draft": draft.model_dump()}
 
     prompt = build_analyst_prompt(fundamentals, chunks)
-    
     json_instructions = """
 Please output ONLY a valid JSON object matching the following structure exactly. Do not wrap it in markdown block quotes or add any extra text before or after:
 {
@@ -37,26 +45,7 @@ Please output ONLY a valid JSON object matching the following structure exactly.
   "citations": ["string", "string", ...]
 }
 """
-    prompt += json_instructions
+    full_prompt = prompt + json_instructions
 
-    try:
-        response = llm.invoke(prompt)
-        text_response = response.content if hasattr(response, 'content') else str(response)
-        
-        # Clean markdown wraps if the LLM ignores instructions
-        match = re.search(r"\{.*\}", text_response, re.DOTALL)
-        if match:
-            text_response = match.group(0)
-            
-        parsed_dict = json.loads(text_response)
-        
-        # Validate through Pydantic to ensure all fields are present
-        report_dict = ReportDraft(**parsed_dict).model_dump()
-    except Exception as e:
-        report_dict = ReportDraft(
-            bull_points=[], bear_points=[],
-            summary=f"Analyst generation failed: {str(e)}",
-            citations=[]
-        ).model_dump()
-
-    return {"report_draft": report_dict}
+    draft = invoke_json(llm, full_prompt, ReportDraft)
+    return {"report_draft": draft.model_dump()}

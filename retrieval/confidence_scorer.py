@@ -65,7 +65,6 @@ def score_retrieval(question: str, chunks: list[str]) -> dict:
         }
 
 
-
 def confidence_scorer_node(state: dict) -> dict:
     """
     Evaluates the retrieved chunks against the original question.

@@ -1,4 +1,5 @@
-from retrieval.vector_store import query_filing
+import retrieval.vector_store as vector_store
+from retrieval.chunker import chunk_filing
 from agents.llm_client import call_llm  # shared LLM client
 
 
@@ -10,32 +11,28 @@ def retriever_agent_node(state: dict) -> dict:
     ticker = state["ticker"]
     query = state.get("current_query", state["question"])
 
-    from retrieval.vector_store import query_filing, _client, ingest_filing
-    from retrieval.chunker import chunk_filing
-    from retrieval.embedder import embed_chunks
-
     collection_name = f"ticker_{ticker.lower()}"
-    collection = _client.get_or_create_collection(name=collection_name)
+    collection = vector_store._client.get_or_create_collection(name=collection_name)
     if collection.count() == 0:
         print(f"[retriever_agent] Collection for {ticker} is empty. Ingesting...")
         if not state.get("filing_text"):
             from agents.data_agent import data_agent_node
             state = data_agent_node(state)  # populate filing_text
-        
+
         filing_text = state.get("filing_text")
         if filing_text:
-            raw_chunks = chunk_filing(filing_text)
-            embedded_chunks = embed_chunks(raw_chunks)
-            ingest_filing(ticker, embedded_chunks)
+            embedded_chunks = chunk_filing(filing_text)
+            vector_store.ingest_filing(ticker, embedded_chunks)
         else:
             print(f"[retriever_agent] Failed to obtain filing_text for ingestion for {ticker}.")
 
-    chunks = query_filing(ticker, query, top_k=5)
+    chunks = vector_store.query_filing(ticker, query, top_k=5)
 
     return {
         "retrieved_chunks": chunks,
         "current_query": query
     }
+
 
 
 def reformulate_query(question: str, ticker: str, chunks_so_far: list, reasoning: str = "") -> str:

@@ -1,29 +1,36 @@
 """
 agents/llm_client.py
 
-Shared LLM client for all agents in the pipeline.
-Single place to configure model, API key, timeouts, and retries.
+Shared Google Gemini LLM client for all agents in the pipeline.
+Configures model, API key, timeouts, and built-in retries.
 """
 import os
-import httpx
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
-_http_client = httpx.Client(timeout=300.0)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY is not set. Please define GEMINI_API_KEY in your .env file."
+    )
+
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 _llm = ChatOpenAI(
-    model="openai/gpt-oss-20b",
-    openai_api_key=os.getenv("NVIDIA_API_KEY"),
-    openai_api_base="https://integrate.api.nvidia.com/v1",
+    model=GEMINI_MODEL,
+    openai_api_key=GEMINI_API_KEY,
+    openai_api_base="https://generativelanguage.googleapis.com/v1beta/openai/",
     temperature=0.2,
     top_p=0.7,
     max_tokens=2048,
-    timeout=300.0,
-    max_retries=2,
+    timeout=120.0,
+    max_retries=3,
 )
-llm = _llm  # public alias for use elsewhere
+
+llm = _llm  # public alias for use across agents
+
 
 def call_llm(prompt: str) -> str:
     """Send a prompt to the configured LLM and return the response string."""

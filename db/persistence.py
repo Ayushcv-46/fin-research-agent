@@ -3,7 +3,8 @@ from db.session import SessionLocal
 from db.models import Report
 
 def save_report(graph_state: dict) -> Report:
-    judge_score = graph_state.get("judge_score", {})
+    judge_score = graph_state.get("judge_score") or {}
+
 
     report = Report(
         ticker=graph_state.get("ticker"),
