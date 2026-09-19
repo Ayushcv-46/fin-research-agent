@@ -33,3 +33,17 @@ def test_report_agent_missing_fields_does_not_crash():
     assert "N/A" in report
     assert "None identified" in report
     assert "No summary generated." in report
+    assert "Judge unavailable" in report
+
+
+def test_report_agent_none_judge_score():
+    state = {
+        "ticker": "AAPL",
+        "price_data": {},
+        "fundamentals": {},
+        "report_draft": {},
+        "judge_score": None,
+    }
+    result = report_agent_node(state)
+    report = result["final_report"]
+    assert "Judge unavailable" in report

@@ -1,12 +1,21 @@
 import os
 import sys
-import json
-import re
+import logging
+from typing import Literal
+from pydantic import BaseModel, Field
 
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from agents.llm_client import call_llm
+from agents.json_utils import parse_and_validate_json
+
+logger = logging.getLogger(__name__)
+
+
+class ConfidenceResult(BaseModel):
+    label: Literal["Correct", "Ambiguous", "Incorrect"]
+    reasoning: str = Field(description="One sentence justification of the score")
 
 
 SCORING_PROMPT = """You are grading whether retrieved text is sufficient to answer a financial research question.
@@ -41,44 +50,21 @@ def score_retrieval(question: str, chunks: list[str]) -> dict:
     prompt = SCORING_PROMPT.format(question=question, chunks_text=chunks_text)
     raw_response = call_llm(prompt)
 
-    # Clean up markdown formatting if present
-    cleaned = raw_response.strip()
-    if cleaned.startswith("```"):
-        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-        cleaned = re.sub(r"\s*```$", "", cleaned).strip()
-
-    result = None
     try:
-        match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-        if match:
-            result = json.loads(match.group(0))
-        else:
-            # If LLM omitted the closing brace
-            candidate = cleaned if cleaned.startswith("{") else "{" + cleaned.split("{", 1)[-1]
-            if not candidate.endswith("}"):
-                candidate = candidate + "}"
-            result = json.loads(candidate)
-
-        if not isinstance(result, dict) or "label" not in result or result["label"] not in ("Correct", "Ambiguous", "Incorrect"):
-            raise ValueError("Missing or invalid label field")
-
-    except Exception:
-        print(f"[confidence_scorer] Failed to parse LLM output: {raw_response!r}")
-        # Secondary fallback: regex search for label
-        label_match = re.search(r'"label"\s*:\s*"(Correct|Ambiguous|Incorrect)"', raw_response, re.IGNORECASE)
-        if label_match:
-            label = label_match.group(1).capitalize()
-            reasoning_match = re.search(r'"reasoning"\s*:\s*"(.*?)"', raw_response, re.DOTALL)
-            reasoning = reasoning_match.group(1) if reasoning_match else "Extracted via fallback."
-            result = {"label": label, "reasoning": reasoning}
-        else:
-            result = {
-                "label": "Ambiguous",
-                "reasoning": "Failed to parse scorer output; defaulting to Ambiguous."
-            }
+        validated = parse_and_validate_json(raw_response, ConfidenceResult)
+        return validated.model_dump()
+    except ValueError as err:
+        logger.warning(
+            "Failed to parse confidence scorer LLM output: %s. Raw output: %r. Defaulting to 'Ambiguous'.",
+            err,
+            raw_response,
+        )
+        return {
+            "label": "Ambiguous",
+            "reasoning": "Confidence evaluation output could not be parsed; defaulting to Ambiguous.",
+        }
 
 
-    return result
 
 def confidence_scorer_node(state: dict) -> dict:
     """
