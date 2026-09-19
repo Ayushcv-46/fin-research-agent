@@ -10,14 +10,15 @@ from retrieval.chunker import chunk_filing
 # pyrefly: ignore [missing-import]
 from retrieval.embedder import embed_chunks
 
-cik = get_cik("AAPL")
-raw_html = get_latest_10k(cik)
-clean_text = clean_filing_text(raw_html)
-chunks = chunk_filing(clean_text)
-print(f"Number of chunks: {len(chunks)}")
-print(chunks[0])  # peek at the first chunk
+if __name__ == "__main__":
+    cik = get_cik("AAPL")
+    raw_html = get_latest_10k(cik)
+    clean_text = clean_filing_text(raw_html)
+    chunks = chunk_filing(clean_text)
+    print(f"Number of chunks: {len(chunks)}")
+    print(chunks[0])  # peek at the first chunk
 
-embedded = embed_chunks(chunks)
-emb = embedded[0]["embedding"] if isinstance(embedded[0], dict) else embedded[0][2]
-emb_dim = len(emb) if isinstance(emb, list) else emb.shape
-print(f"Embedding dimension: {emb_dim}")  # should be 384
+    embedded = embed_chunks(chunks)
+    emb = embedded[0]["embedding"] if isinstance(embedded[0], dict) else embedded[0][2]
+    emb_dim = len(emb) if isinstance(emb, list) else emb.shape
+    print(f"Embedding dimension: {emb_dim}")  # should be 384

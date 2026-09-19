@@ -4,6 +4,7 @@ import os
 import json
 import traceback
 from datetime import datetime
+import pytest
 from agents.graph import build_graph
 
 TEST_TICKERS = [
@@ -40,6 +41,17 @@ def run_single_test(graph, ticker: str) -> dict:
             "retry_count": None,
             "error": f"{type(e).__name__}: {e}\n{traceback.format_exc()}",
         }
+
+
+@pytest.mark.live
+def test_e2e_pipeline_single_ticker():
+    """Live integration test against live APIs for a single ticker (AAPL)."""
+    graph = build_graph()
+    outcome = run_single_test(graph, "AAPL")
+    assert outcome["status"] == "success", f"Pipeline crashed: {outcome['error']}"
+    assert outcome["final_report"] is not None and len(outcome["final_report"]) > 50
+    assert outcome["judge_score"] is not None
+    assert outcome["judge_score"].get("overall", 0) > 0
 
 
 def main():

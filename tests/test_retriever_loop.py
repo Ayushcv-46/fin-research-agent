@@ -4,8 +4,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from unittest.mock import patch
 from agents.retriever_agent import retriever_agent_node, retry_retrieval_node
 
-from agents.graph import build_graph
-
 
 def test_retriever_returns_chunks_when_collection_populated():
     with patch("retrieval.vector_store.query_filing") as mock_query, \
@@ -39,7 +37,9 @@ def test_retry_retrieval_increments_count_and_reformulates():
 
 
 if __name__ == "__main__":
+    from agents.graph import build_graph
     graph = build_graph()
+
 
     test_state = {
         "ticker": "TSLA",
