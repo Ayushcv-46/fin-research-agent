@@ -1,15 +1,55 @@
 const form = document.getElementById("report-form");
+const submitButton = form.querySelector("button[type='submit']");
 const progressDiv = document.getElementById("progress");
 const reportDiv = document.getElementById("report-output");
+
+function renderReport(data) {
+  const judgeContent = data.judge_score
+    ? `
+      <div class="bg-gray-50 p-3 rounded text-sm space-y-1">
+        <div><span class="font-semibold">Overall:</span> ${data.judge_score.overall ?? "N/A"}/10</div>
+        <div><span class="font-semibold">Grounding:</span> ${data.judge_score.grounding ?? "N/A"}/10 | <span class="font-semibold">Completeness:</span> ${data.judge_score.completeness ?? "N/A"}/10 | <span class="font-semibold">Clarity:</span> ${data.judge_score.clarity ?? "N/A"}/10</div>
+        <div><span class="font-semibold">Flagged Issues:</span> ${data.judge_score.flagged_issues && data.judge_score.flagged_issues.length ? data.judge_score.flagged_issues.join(", ") : "None"}</div>
+      </div>
+    `
+    : `<div class="bg-yellow-50 text-yellow-800 p-3 rounded text-sm font-medium">Judge unavailable</div>`;
+
+  reportDiv.innerHTML = `
+    <div class="bg-white p-6 rounded shadow space-y-4">
+      <div class="border-b pb-3">
+        <h2 class="text-xl font-bold text-gray-900">${data.ticker} Research Report</h2>
+        <p class="text-sm text-gray-500">${data.question}</p>
+      </div>
+
+      <div class="prose max-w-none text-sm text-gray-800 whitespace-pre-wrap font-sans">
+        ${data.final_report || "No report generated."}
+      </div>
+
+      <div class="pt-4 border-t">
+        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Quality & Transparency Panel</h3>
+        ${judgeContent}
+      </div>
+    </div>
+  `;
+}
 
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  const ticker = document.getElementById("ticker").value;
-  const question = document.getElementById("question").value;
+  const ticker = document.getElementById("ticker").value.trim().toUpperCase();
+  const question = document.getElementById("question").value.trim();
   const judgeMode = document.getElementById("judge_mode").value;
 
-  // clear anything from a previous run
+  if (!ticker) {
+    alert("Please enter a valid ticker.");
+    return;
+  }
+
+  // Disable button while running
+  submitButton.disabled = true;
+  submitButton.classList.add("opacity-50", "cursor-not-allowed");
+
+  // Clear previous outputs
   progressDiv.innerHTML = "";
   reportDiv.innerHTML = "";
 
@@ -19,27 +59,37 @@ form.addEventListener("submit", function (event) {
   eventSource.addEventListener("stage", function (event) {
     const data = JSON.parse(event.data);
     const line = document.createElement("div");
-    line.className = "text-sm text-gray-700 bg-white px-3 py-2 rounded shadow-sm";
-    line.textContent = `${data.stage}: ${data.message}`;
+    line.className = "text-sm text-gray-700 bg-white px-3 py-2 rounded shadow-sm border-l-4 border-blue-500";
+    line.textContent = `${data.stage.toUpperCase()}: ${data.message}`;
     progressDiv.appendChild(line);
   });
 
   eventSource.addEventListener("complete", function (event) {
     const data = JSON.parse(event.data);
-    reportDiv.innerHTML = `
-      <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-bold mb-2">Report ready</h2>
-        <pre class="text-xs whitespace-pre-wrap">${JSON.stringify(data, null, 2)}</pre>
-      </div>
-    `;
-    eventSource.close(); // stop listening, the run is done
+    renderReport(data);
+    eventSource.close();
+    submitButton.disabled = false;
+    submitButton.classList.remove("opacity-50", "cursor-not-allowed");
   });
 
   eventSource.addEventListener("error", function (event) {
+    let message = "Could not reach server or an error occurred during research.";
+    try {
+      if (event.data) {
+        const parsed = JSON.parse(event.data);
+        if (parsed.message) message = parsed.message;
+      }
+    } catch (e) {
+      // fallback
+    }
+
     const line = document.createElement("div");
-    line.className = "text-sm text-red-700 bg-red-50 px-3 py-2 rounded";
-    line.textContent = "Something went wrong during the run.";
+    line.className = "text-sm text-red-700 bg-red-50 px-3 py-2 rounded border border-red-200";
+    line.textContent = message;
     progressDiv.appendChild(line);
+
     eventSource.close();
+    submitButton.disabled = false;
+    submitButton.classList.remove("opacity-50", "cursor-not-allowed");
   });
 });
