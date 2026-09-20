@@ -3,13 +3,27 @@ const submitButton = form.querySelector("button[type='submit']");
 const progressDiv = document.getElementById("progress");
 const reportDiv = document.getElementById("report-output");
 
+function escapeHtml(value) {
+  if (typeof value !== "string") return value;
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function renderReport(data) {
+  const safeTicker = escapeHtml(data.ticker);
+  const safeQuestion = escapeHtml(data.question);
+  const safeReport = escapeHtml(data.final_report) || "No report generated.";
+  
   const judgeContent = data.judge_score
     ? `
       <div class="bg-gray-50 p-3 rounded text-sm space-y-1">
         <div><span class="font-semibold">Overall:</span> ${data.judge_score.overall ?? "N/A"}/10</div>
         <div><span class="font-semibold">Grounding:</span> ${data.judge_score.grounding ?? "N/A"}/10 | <span class="font-semibold">Completeness:</span> ${data.judge_score.completeness ?? "N/A"}/10 | <span class="font-semibold">Clarity:</span> ${data.judge_score.clarity ?? "N/A"}/10</div>
-        <div><span class="font-semibold">Flagged Issues:</span> ${data.judge_score.flagged_issues && data.judge_score.flagged_issues.length ? data.judge_score.flagged_issues.join(", ") : "None"}</div>
+        <div><span class="font-semibold">Flagged Issues:</span> ${data.judge_score.flagged_issues && data.judge_score.flagged_issues.length ? data.judge_score.flagged_issues.map(escapeHtml).join(", ") : "None"}</div>
       </div>
     `
     : `<div class="bg-yellow-50 text-yellow-800 p-3 rounded text-sm font-medium">Judge unavailable</div>`;
@@ -17,12 +31,12 @@ function renderReport(data) {
   reportDiv.innerHTML = `
     <div class="bg-white p-6 rounded shadow space-y-4">
       <div class="border-b pb-3">
-        <h2 class="text-xl font-bold text-gray-900">${data.ticker} Research Report</h2>
-        <p class="text-sm text-gray-500">${data.question}</p>
+        <h2 class="text-xl font-bold text-gray-900">${safeTicker} Research Report</h2>
+        <p class="text-sm text-gray-500">${safeQuestion}</p>
       </div>
 
       <div class="prose max-w-none text-sm text-gray-800 whitespace-pre-wrap font-sans">
-        ${data.final_report || "No report generated."}
+        ${safeReport}
       </div>
 
       <div class="pt-4 border-t">
