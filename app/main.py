@@ -1,14 +1,17 @@
 import json
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from typing import Literal
+
+import openai
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
-from app.schemas import ReportRequest
 from agents.graph import build_graph
-from db.persistence import save_report, get_reports, get_report_by_id
+from app.schemas import ReportRequest
 from db.health import check_db_connection
+from db.persistence import get_report_by_id, get_reports, save_report
 from retrieval.embedder import warm_up_embedder
 
 logging.basicConfig(level=logging.INFO)
@@ -27,11 +30,12 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 GRAPH = build_graph()
 
@@ -41,9 +45,23 @@ def validate_ticker(ticker: str) -> str:
     if not cleaned or not cleaned.isalpha():
         raise HTTPException(
             status_code=400,
-            detail="Invalid ticker symbol. Ticker must contain alphabetic characters only."
+            detail="Invalid ticker symbol. Ticker must contain alphabetic characters only.",
         )
     return cleaned
+
+
+def build_ui_payload(state: dict) -> dict:
+    return {
+        "ticker": state.get("ticker"),
+        "question": state.get("question"),
+        "final_report": state.get("final_report"),
+        "judge_score": state.get("judge_score"),
+        "price_data": state.get("price_data"),
+        "fundamentals": state.get("fundamentals"),
+        "confidence_label": state.get("confidence_label"),
+        "confidence_reasoning": state.get("confidence_reasoning"),
+        "retry_count": state.get("retry_count", 0),
+    }
 
 
 @app.post("/report")
@@ -61,32 +79,39 @@ def create_report(request: ReportRequest):
         result = GRAPH.invoke(initial_state)
         save_report(result)
         logger.info("Report saved successfully for %s", ticker)
-        return result
+        return build_ui_payload(result)
 
-    except RuntimeError as e:
-        logger.exception("Pipeline runtime error generating report for %s: %s", ticker, e)
-        raise HTTPException(
-            status_code=502,
-            detail="Upstream AI provider error occurred while generating report. Please try again."
-        ) from e
+    except HTTPException:
+        raise
 
-    except TimeoutError as e:
-        logger.error("Timeout generating report for %s: %s", ticker, e)
+    except openai.APITimeoutError as e:
+        logger.exception("AI provider timeout generating report for %s: %s", ticker, e)
         raise HTTPException(
             status_code=504,
-            detail="The AI research service timed out. Please try again."
+            detail="The AI research service timed out. Please try again.",
+        ) from e
+
+    except (openai.APIError, RuntimeError) as e:
+        logger.exception("Pipeline upstream error generating report for %s: %s", ticker, e)
+        raise HTTPException(
+            status_code=502,
+            detail="Upstream AI provider error occurred while generating report. Please try again.",
         ) from e
 
     except Exception as e:
         logger.exception("Unexpected error generating report for %s: %s", ticker, e)
         raise HTTPException(
             status_code=500,
-            detail="An unexpected internal error occurred."
+            detail="An unexpected internal error occurred.",
         ) from e
 
 
 @app.get("/report/stream")
-def report_stream(ticker: str, question: str, judge_mode: str = "api"):
+def report_stream(
+    ticker: str,
+    question: str = Query(..., min_length=1, max_length=500),
+    judge_mode: Literal["api", "finetuned"] = "api",
+):
     validated_ticker = validate_ticker(ticker)
 
     def event_generator():
@@ -106,22 +131,12 @@ def report_stream(ticker: str, question: str, judge_mode: str = "api"):
                 for node_name, node_output in chunk.items():
                     if isinstance(node_output, dict):
                         final_state.update(node_output)
-                    yield f"event: stage\ndata: {json.dumps({'stage': node_name, 'message': f'Running {node_name}...'})}\n\n"
+                    yield f"event: stage\ndata: {json.dumps({'stage': node_name, 'message': f'Completed {node_name}'})}\n\n"
 
             save_report(final_state)
             logger.info("Streamed report saved to database for %s", validated_ticker)
 
-            ui_payload = {
-                "ticker": final_state.get("ticker"),
-                "question": final_state.get("question"),
-                "final_report": final_state.get("final_report"),
-                "judge_score": final_state.get("judge_score"),
-                "price_data": final_state.get("price_data"),
-                "fundamentals": final_state.get("fundamentals"),
-                "confidence_label": final_state.get("confidence_label"),
-                "confidence_reasoning": final_state.get("confidence_reasoning"),
-                "retry_count": final_state.get("retry_count", 0),
-            }
+            ui_payload = build_ui_payload(final_state)
             yield f"event: complete\ndata: {json.dumps(ui_payload)}\n\n"
 
         except Exception as e:
