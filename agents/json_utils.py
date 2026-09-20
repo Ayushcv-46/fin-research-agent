@@ -32,7 +32,9 @@ def parse_and_validate_json(raw_text: str, schema_cls: Type[T]) -> T:
     Raises ValueError with context if parsing or validation fails.
     """
     if not raw_text or not raw_text.strip():
-        raise ValueError(f"Empty LLM response received while expecting JSON for {schema_cls.__name__}")
+        raise ValueError(
+            f"Empty LLM response received while expecting JSON for {schema_cls.__name__}"
+        )
 
     json_str = extract_json_str(raw_text)
 
@@ -82,4 +84,3 @@ def invoke_json(llm, prompt: str, schema_cls: Type[T], max_retries: int = 1) -> 
     raise RuntimeError(
         f"Failed to obtain valid JSON for {schema_cls.__name__} after {max_retries} retry: {last_value_error}"
     ) from last_value_error
-

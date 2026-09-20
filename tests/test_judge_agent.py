@@ -52,6 +52,7 @@ def test_judge_api_mode_llm_failure_returns_none():
         result = judge_agent_node(state)
 
         assert result["judge_score"] is None
+        assert mock_llm.invoke.call_count == 1
 
 
 def test_judge_api_mode_malformed_json_returns_none():
@@ -63,6 +64,8 @@ def test_judge_api_mode_malformed_json_returns_none():
         result = judge_agent_node(state)
 
         assert result["judge_score"] is None
+        assert mock_llm.invoke.call_count == 2
+
 
 
 

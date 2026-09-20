@@ -45,8 +45,11 @@ class GraphState(TypedDict, total=False):
     price_data: dict
     fundamentals: dict
     filing_text: str
+    judge_mode: str
+    retrieval_mode: str
     # DEBUG: set True in tests to force Ambiguous on attempt 1 and verify retry loop
     _force_ambiguous_once: bool
+
 
 def build_graph():
     graph = StateGraph(GraphState)

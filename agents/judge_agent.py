@@ -56,8 +56,9 @@ Please output ONLY a valid JSON object matching the following structure exactly.
         validated_score = invoke_json(llm, full_prompt, JudgeScore)
         return {"judge_score": validated_score.model_dump()}
     except Exception as e:
-        logger.warning("Judge evaluation failed: %s", e)
+        logger.exception("Judge API evaluation failed: %s", e)
         return {"judge_score": None}
+
 
 
 
@@ -120,8 +121,9 @@ def _judge_with_finetuned(prompt: str) -> dict:
         )
         return {"judge_score": validated.model_dump()}
     except Exception as e:
-        logger.warning("Fine-tuned judge inference failed: %s", e)
+        logger.exception("Fine-tuned judge inference failed: %s", e)
         return {"judge_score": None}
+
 
 
 
