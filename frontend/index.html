@@ -4,44 +4,66 @@
   <meta charset="UTF-8">
   <title>Financial Research Analyst</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* Add some basic prose styles since we aren't using @tailwindcss/typography */
+    .prose h2 { font-size: 1.5em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
+    .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+    .prose p { margin-bottom: 1em; }
+    .prose strong { font-weight: bold; }
+  </style>
 </head>
 <body class="bg-gray-50 min-h-screen p-8">
 
-  <div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6">Financial Research Analyst</h1>
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- Main Content (Form, Progress, Report) -->
+    <div class="md:col-span-2">
+      <h1 class="text-2xl font-bold mb-6">Financial Research Analyst</h1>
 
-    <!-- The input form -->
-    <form id="report-form" class="bg-white p-6 rounded shadow space-y-4">
-      <div>
-        <label class="block text-sm font-medium mb-1">Ticker</label>
-        <input type="text" id="ticker" placeholder="AAPL"
-               class="w-full border rounded px-3 py-2">
+      <!-- The input form -->
+      <form id="report-form" class="bg-white p-6 rounded shadow space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Ticker</label>
+          <input type="text" id="ticker" placeholder="AAPL"
+                 class="w-full border rounded px-3 py-2">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Question</label>
+          <input type="text" id="question" placeholder="How is the company doing?"
+                 class="w-full border rounded px-3 py-2">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Judge Mode</label>
+          <select id="judge_mode" class="w-full border rounded px-3 py-2">
+            <option value="api">API Judge</option>
+            <option value="finetuned">Fine-tuned Judge</option>
+          </select>
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Run Research
+        </button>
+      </form>
+
+      <!-- Live progress will get added here by JS -->
+      <div id="progress" class="mt-6 space-y-2"></div>
+
+      <!-- Final report will get rendered here by JS -->
+      <div id="report-output" class="mt-6 space-y-6"></div>
+    </div>
+
+    <!-- Sidebar (History) -->
+    <div class="md:col-span-1">
+      <h2 class="text-xl font-bold mb-6">Recent Reports</h2>
+      <div id="history-list" class="space-y-3">
+        <!-- History items will be injected here -->
+        <p class="text-sm text-gray-500">Loading history...</p>
       </div>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium mb-1">Question</label>
-        <input type="text" id="question" placeholder="How is the company doing?"
-               class="w-full border rounded px-3 py-2">
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Judge Mode</label>
-        <select id="judge_mode" class="w-full border rounded px-3 py-2">
-          <option value="api">API Judge</option>
-          <option value="finetuned">Fine-tuned Judge</option>
-        </select>
-      </div>
-
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Run Research
-      </button>
-    </form>
-
-    <!-- Live progress will get added here by JS -->
-    <div id="progress" class="mt-6 space-y-2"></div>
-
-    <!-- Final report will get rendered here by JS -->
-    <div id="report-output" class="mt-6"></div>
   </div>
 
   <script src="app.js"></script>
