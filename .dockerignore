@@ -1,0 +1,34 @@
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Git metadata
+.git/
+.gitignore
+
+# SQLite databases and persistent runtime files
+data/app.db
+data/cache_store.json
+data_storage/
+chroma_db/
+outputs/
+outputs_toy/
+toy_adapter/
+results/
+notebooks/
+docs/

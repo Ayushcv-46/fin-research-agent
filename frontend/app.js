@@ -5,6 +5,9 @@ const reportDiv = document.getElementById("report-output");
 const historyList = document.getElementById("history-list");
 let currentReportData = null;
 
+// Use relative API path if served from FastAPI directly (e.g. port 8000 / Docker), or fallback to port 8000 if served via Live Server (port 5500)
+const API_BASE = window.location.port === "5500" ? "http://localhost:8000" : "";
+
 function escapeHtml(value) {
   if (typeof value !== "string") return value;
   return value
@@ -17,7 +20,7 @@ function escapeHtml(value) {
 
 async function fetchHistory() {
   try {
-    const res = await fetch("http://localhost:8000/reports");
+    const res = await fetch(`${API_BASE}/reports`);
     if (!res.ok) throw new Error("Failed to fetch history");
     const reports = await res.json();
     renderHistory(reports);
@@ -49,7 +52,7 @@ function renderHistory(reports) {
 
 async function loadReport(id) {
   try {
-    const res = await fetch(`http://localhost:8000/reports/${id}`);
+    const res = await fetch(`${API_BASE}/reports/${id}`);
     if (!res.ok) throw new Error("Failed to load report");
     const data = await res.json();
     
@@ -172,7 +175,7 @@ form.addEventListener("submit", function (event) {
   progressDiv.innerHTML = "";
   reportDiv.innerHTML = "";
 
-  const url = `http://localhost:8000/report/stream?ticker=${encodeURIComponent(ticker)}&question=${encodeURIComponent(question)}&judge_mode=${encodeURIComponent(judgeMode)}`;
+  const url = `${API_BASE}/report/stream?ticker=${encodeURIComponent(ticker)}&question=${encodeURIComponent(question)}&judge_mode=${encodeURIComponent(judgeMode)}`;
   const eventSource = new EventSource(url);
 
   eventSource.addEventListener("stage", function (event) {

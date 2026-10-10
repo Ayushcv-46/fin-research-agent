@@ -1,0 +1,20 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fin_research_agent
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Direct SQLite database into the mounted volume path
+      - DATABASE_URL=sqlite:////app/data_storage/app.db
+    volumes:
+      # Named volume to persist SQLite DB across container restarts & rebuilds
+      - sqlite_data:/app/data_storage
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:
