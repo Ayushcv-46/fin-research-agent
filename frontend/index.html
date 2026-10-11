@@ -2,67 +2,502 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Financial Research Analyst</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-powered financial research analyst. Generate institutional-grade equity research reports from SEC filings and market data.">
+  <title>FinResearch — AI Equity Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Add some basic prose styles since we aren't using @tailwindcss/typography */
-    .prose h2 { font-size: 1.5em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
-    .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
-    .prose p { margin-bottom: 1em; }
-    .prose strong { font-weight: bold; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #2563eb;
+      --blue-light: #eff6ff;
+      --blue-mid:   #dbeafe;
+      --green:      #16a34a;
+      --green-light:#f0fdf4;
+      --amber:      #d97706;
+      --amber-light:#fffbeb;
+      --red:        #dc2626;
+      --red-light:  #fef2f2;
+      --gray-50:    #f9fafb;
+      --gray-100:   #f3f4f6;
+      --gray-200:   #e5e7eb;
+      --gray-300:   #d1d5db;
+      --gray-400:   #9ca3af;
+      --gray-500:   #6b7280;
+      --gray-600:   #4b5563;
+      --gray-700:   #374151;
+      --gray-800:   #1f2937;
+      --gray-900:   #111827;
+      --border:     #e5e7eb;
+      --radius:     8px;
+      --radius-lg:  12px;
+      --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
+      --shadow:     0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --transition: 0.15s ease;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Top Nav Bar ---- */
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .topbar-icon {
+      width: 28px; height: 28px;
+      background: var(--blue);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .topbar-icon svg { width: 16px; height: 16px; }
+    .topbar-brand-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-900);
+      letter-spacing: -0.01em;
+    }
+    .topbar-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gray-500);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      padding: 2px 7px;
+      margin-left: 4px;
+    }
+    .topbar-right {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .status-dot {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 500; color: var(--gray-500);
+    }
+    .status-dot::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* ---- Layout ---- */
+    .layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      padding: 28px 24px 48px;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+    }
+
+    /* ---- Cards ---- */
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+    }
+    .card-body { padding: 20px; }
+
+    /* ---- Form ---- */
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-of-type { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      height: 40px;
+      background: #ffffff;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      padding: 0 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--gray-900);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    input::placeholder { color: var(--gray-400); }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 10px;
+    }
+
+    /* Judge mode toggle */
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      padding: 3px;
+      gap: 2px;
+    }
+    .toggle-group input[type="radio"] { display: none; }
+    .toggle-group label {
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-500);
+      text-align: center;
+      padding: 7px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all var(--transition);
+      margin: 0;
+    }
+    .toggle-group input[type="radio"]:checked + label {
+      background: #ffffff;
+      color: var(--gray-800);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+
+    /* Submit button */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      height: 40px;
+      background: var(--blue);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-top: 18px;
+      transition: background var(--transition), opacity var(--transition);
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary .btn-spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-primary.loading .btn-spinner { display: block; }
+    .btn-primary.loading .btn-text { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Pipeline progress ---- */
+    .pipeline { margin-top: 20px; }
+    .pipeline-step {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 14px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--gray-600);
+      animation: fadeSlide 0.2s ease both;
+    }
+    .pipeline-step-icon {
+      width: 20px; height: 20px; flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--blue-mid);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipeline-step-icon svg { width: 10px; height: 10px; }
+    .pipeline-step-label { font-weight: 500; color: var(--gray-700); }
+    .pipeline-step-msg { color: var(--gray-400); margin-left: auto; font-size: 12px; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Report ---- */
+    .report-card { margin-top: 20px; }
+    .report-header { padding: 20px 24px 0; }
+    .report-ticker {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -0.02em;
+    }
+    .report-question {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 3px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius);
+      margin: 16px 24px;
+      overflow: hidden;
+    }
+    @media (max-width: 700px) {
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .metric-cell {
+      background: #ffffff;
+      padding: 14px 16px;
+    }
+    .metric-label { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-value { font-size: 17px; font-weight: 700; color: var(--gray-900); margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .metric-sub { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+    /* Judge scores */
+    .score-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .score-bar-label { font-size: 12px; font-weight: 500; color: var(--gray-600); width: 100px; flex-shrink: 0; }
+    .score-bar-track { flex: 1; height: 5px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+    .score-bar-fill.high  { background: var(--green); }
+    .score-bar-fill.mid   { background: var(--amber); }
+    .score-bar-fill.low   { background: var(--red); }
+    .score-bar-value { font-size: 12px; font-weight: 600; color: var(--gray-700); width: 32px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* Divider inside report */
+    .report-divider { height: 1px; background: var(--gray-100); margin: 0 24px; }
+
+    /* Prose report body */
+    .report-body { padding: 20px 24px; }
+    .prose { font-size: 14px; line-height: 1.75; color: var(--gray-700); }
+    .prose h2 { font-size: 16px; font-weight: 700; color: var(--gray-900); margin: 20px 0 8px; letter-spacing: -0.01em; }
+    .prose h3 { font-size: 14px; font-weight: 600; color: var(--gray-800); margin: 14px 0 6px; }
+    .prose p { margin-bottom: 12px; }
+    .prose ul { list-style-type: disc; padding-left: 20px; margin-bottom: 12px; }
+    .prose li { margin-bottom: 4px; }
+    .prose strong { font-weight: 600; color: var(--gray-800); }
+    .prose table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    .prose th { background: var(--gray-50); text-align: left; padding: 8px 12px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-500); border-bottom: 1px solid var(--gray-200); }
+    .prose td { padding: 8px 12px; border-bottom: 1px solid var(--gray-100); }
+
+    /* Judge panel */
+    .judge-section { padding: 16px 24px 20px; border-top: 1px solid var(--gray-100); }
+    .judge-title { font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+    .overall-score { display: flex; align-items: baseline; gap: 4px; margin-bottom: 16px; }
+    .overall-score-num { font-size: 32px; font-weight: 700; color: var(--gray-900); font-variant-numeric: tabular-nums; }
+    .overall-score-denom { font-size: 16px; font-weight: 500; color: var(--gray-400); }
+    .overall-score-label { font-size: 12px; color: var(--gray-400); margin-left: 6px; align-self: center; }
+
+    .btn-rerun {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; font-family: inherit;
+      color: var(--blue);
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background var(--transition);
+    }
+    .btn-rerun:hover { background: var(--blue-mid); }
+
+    .judge-unavailable {
+      font-size: 13px; color: var(--amber); background: var(--amber-light);
+      border: 1px solid #fde68a; border-radius: var(--radius);
+      padding: 10px 14px; margin-top: 16px;
+    }
+
+    /* ---- Sidebar ---- */
+    .sidebar-header {
+      padding: 16px 18px;
+      font-size: 12px; font-weight: 600; color: var(--gray-500);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .history-list { padding: 6px 8px; }
+    .history-item {
+      display: flex; flex-direction: column;
+      padding: 11px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background var(--transition);
+      border: 1px solid transparent;
+    }
+    .history-item:hover { background: var(--gray-50); border-color: var(--gray-100); }
+    .history-item-top { display: flex; align-items: center; justify-content: space-between; }
+    .history-ticker {
+      font-size: 13px; font-weight: 700; color: var(--gray-900);
+      font-variant-numeric: tabular-nums; letter-spacing: 0.01em;
+    }
+    .history-score {
+      font-size: 11px; font-weight: 600;
+      padding: 2px 7px; border-radius: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .score-hi  { background: var(--green-light); color: var(--green); }
+    .score-mid { background: var(--amber-light); color: var(--amber); }
+    .score-lo  { background: var(--red-light);   color: var(--red); }
+    .score-na  { background: var(--gray-100);    color: var(--gray-500); }
+    .history-question { font-size: 12px; color: var(--gray-400); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-time { font-size: 11px; color: var(--gray-300); margin-top: 3px; }
+
+    .sidebar-empty { padding: 20px 18px; font-size: 13px; color: var(--gray-400); }
+    .sidebar-error { padding: 14px 18px; font-size: 12px; color: var(--red); background: var(--red-light); border-top: 1px solid var(--gray-100); }
+
+    /* Error banner */
+    .error-step {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: var(--red-light);
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--red);
+      animation: fadeSlide 0.2s ease both;
+    }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-8">
+<body>
 
-  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-    
-    <!-- Main Content (Form, Progress, Report) -->
-    <div class="md:col-span-2">
-      <h1 class="text-2xl font-bold mb-6">Financial Research Analyst</h1>
-
-      <!-- The input form -->
-      <form id="report-form" class="bg-white p-6 rounded shadow space-y-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">Ticker</label>
-          <input type="text" id="ticker" placeholder="AAPL"
-                 class="w-full border rounded px-3 py-2">
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Question</label>
-          <input type="text" id="question" placeholder="How is the company doing?"
-                 class="w-full border rounded px-3 py-2">
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Judge Mode</label>
-          <select id="judge_mode" class="w-full border rounded px-3 py-2">
-            <option value="api">API Judge</option>
-            <option value="finetuned">Fine-tuned Judge</option>
-          </select>
-        </div>
-
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Run Research
-        </button>
-      </form>
-
-      <!-- Live progress will get added here by JS -->
-      <div id="progress" class="mt-6 space-y-2"></div>
-
-      <!-- Final report will get rendered here by JS -->
-      <div id="report-output" class="mt-6 space-y-6"></div>
-    </div>
-
-    <!-- Sidebar (History) -->
-    <div class="md:col-span-1">
-      <h2 class="text-xl font-bold mb-6">Recent Reports</h2>
-      <div id="history-list" class="space-y-3">
-        <!-- History items will be injected here -->
-        <p class="text-sm text-gray-500">Loading history...</p>
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <a class="topbar-brand" href="/">
+      <div class="topbar-icon">
+        <svg fill="none" viewBox="0 0 16 16" stroke="white" stroke-width="1.8">
+          <polyline points="1,12 5,7 8,10 12,4 15,6"/>
+        </svg>
       </div>
+      <span class="topbar-brand-name">FinResearch</span>
+      <span class="topbar-badge">AI</span>
+    </a>
+    <div class="topbar-right">
+      <span class="status-dot">System Online</span>
     </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="layout">
+
+    <!-- Left: Main Column -->
+    <main>
+
+      <!-- Input Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">New Research Query</span>
+        </div>
+        <div class="card-body">
+          <form id="report-form">
+
+            <div class="input-row form-group">
+              <div>
+                <label for="ticker">Ticker</label>
+                <input type="text" id="ticker" placeholder="AAPL" maxlength="10" autocomplete="off" spellcheck="false">
+              </div>
+              <div>
+                <label for="question">Research Question</label>
+                <input type="text" id="question" placeholder="What is the company's growth outlook?" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Judge Mode</label>
+              <div class="toggle-group">
+                <input type="radio" name="judge_mode" id="mode-api" value="api" checked>
+                <label for="mode-api">API Judge</label>
+                <input type="radio" name="judge_mode" id="mode-finetuned" value="finetuned">
+                <label for="mode-finetuned">Fine-tuned Judge</label>
+              </div>
+            </div>
+
+            <button id="submit-btn" type="submit" class="btn-primary">
+              <span class="btn-text">Run Analysis</span>
+              <div class="btn-spinner"></div>
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Pipeline Progress -->
+      <div id="progress" class="pipeline"></div>
+
+      <!-- Report Output -->
+      <div id="report-output"></div>
+
+    </main>
+
+    <!-- Right: Sidebar -->
+    <aside class="sidebar">
+      <div class="card" style="position: sticky; top: 76px;">
+        <div class="sidebar-header">Recent Reports</div>
+        <div id="history-list" class="history-list">
+          <p class="sidebar-empty">Loading...</p>
+        </div>
+      </div>
+    </aside>
 
   </div>
 

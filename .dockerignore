@@ -22,6 +22,8 @@ htmlcov/
 .gitignore
 
 # SQLite databases and persistent runtime files
+*.db
+data/*.db
 data/app.db
 data/cache_store.json
 data_storage/

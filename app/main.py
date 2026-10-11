@@ -7,7 +7,7 @@ from typing import Literal
 import openai
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from agents.graph import build_graph
@@ -164,7 +164,12 @@ def get_one_report(report_id: int):
 @app.get("/health")
 def health_check():
     db_ok = check_db_connection()
-    return {"status": "ok" if db_ok else "error", "database": db_ok}
+    if not db_ok:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "database": False},
+        )
+    return {"status": "ok", "database": db_ok}
 
 
 # Mount frontend static files for serving UI at "/"

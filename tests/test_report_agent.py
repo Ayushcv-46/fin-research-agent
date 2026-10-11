@@ -11,10 +11,11 @@ def test_report_agent_all_fields_present():
     result = report_agent_node(state)
     report = result["final_report"]
 
-    assert "AAPL" in report
+    assert "## Market Snapshot" in report
     assert "227.5" in report
     assert "Strong iPhone sales" in report
-    assert "Overall Score: 8/10" in report
+    assert "China risk" in report
+    assert "Mixed outlook." in report
 
 
 def test_report_agent_missing_fields_does_not_crash():
@@ -29,11 +30,11 @@ def test_report_agent_missing_fields_does_not_crash():
     result = report_agent_node(state)
     report = result["final_report"]
 
-    assert "GPRO" in report
+    assert "## Market Snapshot" in report
     assert "N/A" in report
     assert "None identified" in report
     assert "No summary generated." in report
-    assert "Judge unavailable" in report
+    assert "## Sources" in report
 
 
 def test_report_agent_none_judge_score():
@@ -46,4 +47,6 @@ def test_report_agent_none_judge_score():
     }
     result = report_agent_node(state)
     report = result["final_report"]
-    assert "Judge unavailable" in report
+    assert "## Market Snapshot" in report
+    assert "## Sources" in report
+

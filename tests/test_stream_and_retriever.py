@@ -59,7 +59,8 @@ def test_streamed_accumulation_matches_invoke():
         assert stream_state == invoke_state
         assert stream_state["ticker"] == "AAPL"
         assert stream_state["judge_score"]["overall"] == 9
-        assert "Financial Research Report: AAPL" in stream_state["final_report"]
+        assert "## Market Snapshot" in stream_state["final_report"]
+        assert "Strong growth (Section: Item 7.)" in stream_state["final_report"]
 
 
 def test_embedding_runs_once_per_chunk():
