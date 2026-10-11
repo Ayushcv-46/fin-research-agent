@@ -1,11 +1,11 @@
 .env
 venv/
 __pycache__/
+data/*.db
 data/cache_store.json
+data/chroma/
 chroma_db/
 test.py
 toy_adapter/
 outputs_toy/
 .coverage
-data/app.db
-
