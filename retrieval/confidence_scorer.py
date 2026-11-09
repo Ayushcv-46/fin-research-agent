@@ -70,7 +70,10 @@ def confidence_scorer_node(state: dict) -> dict:
     Evaluates the retrieved chunks against the original question.
     Returns confidence_label (Correct/Ambiguous/Incorrect) and confidence_reasoning.
     """
-    result = score_retrieval(state["question"], state["retrieved_chunks"])
+    if state.get("retrieval_mode", "adaptive") == "fixed":
+        return {"confidence_label": "Not scored", "confidence_reasoning": "Confidence scoring is disabled in fixed retrieval mode."}
+    question = state.get("current_query") if state.get("retry_count", 0) else state.get("question", "")
+    result = score_retrieval(question or state.get("question", ""), state.get("retrieved_chunks") or [])
     return {
         "confidence_label": result["label"],
         "confidence_reasoning": result["reasoning"],

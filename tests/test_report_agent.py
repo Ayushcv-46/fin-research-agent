@@ -31,9 +31,9 @@ def test_report_agent_missing_fields_does_not_crash():
     report = result["final_report"]
 
     assert "## Market Snapshot" in report
-    assert "N/A" in report
-    assert "None identified" in report
-    assert "No summary generated." in report
+    assert "Not available" in report or "N/A" in report
+    assert "No clearly supported" in report or "None identified" in report
+    assert "No clear takeaway" in report or "No summary generated." in report
     assert "## Sources" in report
 
 

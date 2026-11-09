@@ -14,7 +14,10 @@ services:
     volumes:
       # Named volume to persist SQLite DB across container restarts & rebuilds
       - sqlite_data:/app/data_storage
+      # Persist Chroma filing indexes across container rebuilds
+      - chroma_data:/app/chroma_db
     restart: unless-stopped
 
 volumes:
   sqlite_data:
+  chroma_data:

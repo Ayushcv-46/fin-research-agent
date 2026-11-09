@@ -22,6 +22,14 @@ def test_judge_api_mode_valid_response():
         assert result["judge_score"]["flagged_issues"] == []
 
 
+def test_request_judge_mode_overrides_startup_default():
+    good_json = '{"grounding": 8, "completeness": 7, "clarity": 9, "overall": 8, "flagged_issues": []}'
+    with patch("agents.judge_agent._judge_with_finetuned", return_value={"judge_score": {"overall": 7}}) as finetuned:
+        result = judge_agent_node({"judge_mode": "finetuned", "report_draft": {}, "retrieved_chunks": []})
+    finetuned.assert_called_once()
+    assert result["judge_score"]["overall"] == 7
+
+
 def test_judge_api_mode_fenced_json_response():
     fenced_json = """```json
     {

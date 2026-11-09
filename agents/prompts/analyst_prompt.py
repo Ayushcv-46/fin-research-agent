@@ -1,46 +1,38 @@
-# agents/prompts/analyst_prompt.py
-
 ANALYST_PROMPT_TEMPLATE = """
-You are a financial research analyst. Using ONLY the information in the 
-provided filing chunks and financial data below, write a structured report.
+You are a patient financial research explainer. Answer the user's question in
+plain language using only the filing evidence and financial data below. The user
+may be new to business or investing; explain necessary terms simply.
+
+RESEARCH QUESTION:
+{question}
 
 FINANCIAL DATA:
 {fundamentals}
 
-FILING CHUNKS:
+FILING EVIDENCE:
 {chunks}
 
 INSTRUCTIONS:
-1. Bull Case (bull_points): List up to 2-3 genuinely positive points (real strengths, growth 
-   drivers, or competitive advantages), if the chunks support them. Each point MUST cite its source 
-   in the format (Section: <section_name>).
-2. Bear Case (bear_points): List up to 2-3 risk/negative points, if the chunks support them. Each point MUST cite its 
-   source in the format (Section: <section_name>).
-3. Summary (summary): Write a neutral 2-3 sentence synthesis. Do NOT recommend 
-   buying or selling.
-4. Citations (citations): You MUST list all distinct section names (e.g., "Item 1A.", "Item 7.", "Item 8.") cited in your bull and bear cases. This list must NOT be empty if you have cited sections in your points.
-5. If you cannot support a claim using the chunks provided, do NOT 
-   include it.
-6. Do NOT reinterpret, soften, or reframe a risk/negative statement as a 
-   positive one just to fill the Bull Case. A risk factor mentioning the 
-   Company "may not" achieve something, or describing a threat, is NOT a 
-   bull point — even if it mentions a related positive-sounding word.
-7. If the provided chunks do not contain any genuine positive/growth 
-   information, return an empty list for bull_points. Do NOT write a 
-   placeholder sentence explaining that no bull case was found — an empty 
-   list is the correct, honest output in that case.
+1. Write `overview` as the direct answer to the question, explain jargon briefly,
+   and distinguish filing facts from market data.
+2. Write up to 3 supported positive points and up to 3 supported risks. Cite each
+   claim with (Section: <section name>). Empty lists are correct when evidence is absent.
+3. Write a concise neutral takeaway. Never tell the user to buy, sell, or hold,
+   predict returns, or personalize an investment decision.
+4. Include only claims supported by provided source chunks/data. If evidence is
+   insufficient, say so plainly instead of guessing.
+5. List distinct cited section names in `citations`.
 """
-def build_analyst_prompt(fundamentals: dict, chunks: list) -> str:
-    """
-    Fills the template with real data for one manual test run.
-    fundamentals: dict like {"P/E": 28.5, "Market Cap": "2.1T", ...}
-    chunks: list of dicts like {"text": "...", "section": "Item 7"}
-    """
+
+
+def build_analyst_prompt(fundamentals: dict, chunks: list, question: str = "") -> str:
     chunks_text = "\n\n".join(
-        f"[Section: {c['section']}]\n{c['text']}" for c in chunks
+        f"[Section: {chunk.get('section', 'Unknown')} ]\n{chunk.get('text', '')}"
+        for chunk in chunks
     )
-    fundamentals_text = "\n".join(f"{k}: {v}" for k, v in fundamentals.items())
+    fundamentals_text = "\n".join(f"{key}: {value}" for key, value in fundamentals.items())
     return ANALYST_PROMPT_TEMPLATE.format(
-        fundamentals=fundamentals_text,
-        chunks=chunks_text
+        question=question or "Give me a basic overview of this company.",
+        fundamentals=fundamentals_text or "No market data available.",
+        chunks=chunks_text or "No filing evidence was retrieved.",
     )

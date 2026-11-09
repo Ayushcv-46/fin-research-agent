@@ -1,40 +1,56 @@
 def report_agent_node(state: dict) -> dict:
-    ticker = state.get("ticker", "UNKNOWN")
     price_data = state.get("price_data") or {}
     fundamentals = state.get("fundamentals") or {}
     report_draft = state.get("report_draft") or {}
     retrieved_chunks = state.get("retrieved_chunks") or []
+    filing = state.get("filing_metadata") or {}
 
-    bull_points = report_draft.get("bull_points", [])
-    bear_points = report_draft.get("bear_points", [])
-    summary = report_draft.get("summary", "")
+    overview = report_draft.get("overview") or report_draft.get("summary") or "The available filing evidence was not enough to provide a clear overview."
+    strengths = report_draft.get("bull_points") or []
+    risks = report_draft.get("bear_points") or []
+    summary = report_draft.get("summary") or "No clear takeaway could be generated from the available evidence."
 
-    sources_html = "\n".join([f"<li>{chunk}</li>" for chunk in retrieved_chunks])
-    if not sources_html:
-        sources_html = "<li>No sources available.</li>"
+    sources = "\n".join(
+        f"<li><strong>{chunk.get('section', 'Unknown section')}</strong> — "
+        f"{chunk.get('text', '')[:700]}{'…' if len(chunk.get('text', '')) > 700 else ''}</li>"
+        for chunk in retrieved_chunks
+    ) or "<li>No filing passages were retrieved for this question.</li>"
 
-    final_report = f"""## Market Snapshot
-- **Price:** {price_data.get('current_price', 'N/A')}
-- **52W High/Low:** {price_data.get('fifty_two_week_high', 'N/A')} / {price_data.get('fifty_two_week_low', 'N/A')}
-- **P/E:** {fundamentals.get('pe_ratio', 'N/A')}
-- **Market Cap:** {fundamentals.get('market_cap', 'N/A')}
+    report = f"""## In brief
+{overview}
 
-## Bull Case
-{chr(10).join(f"- {p}" for p in bull_points) if bull_points else "- None identified"}
+## Key strengths
+{chr(10).join(f"- {item}" for item in strengths) if strengths else "- No clearly supported strengths were found in the passages retrieved."}
 
-## Bear Case
-{chr(10).join(f"- {p}" for p in bear_points) if bear_points else "- None identified"}
+## Risks to know
+{chr(10).join(f"- {item}" for item in risks) if risks else "- No clearly supported risks were found in the passages retrieved."}
 
-## Summary
-{summary if summary else "No summary generated."}
+## Takeaway
+{summary}
+
+## Market Snapshot
+- **Share price:** {price_data.get('current_price', 'Not available')}
+- **52-week range:** {price_data.get('fifty_two_week_low', 'Not available')} – {price_data.get('fifty_two_week_high', 'Not available')}
+- **P/E ratio:** {fundamentals.get('pe_ratio', 'Not available')}
+- **Market capitalization:** {fundamentals.get('market_cap', 'Not available')}
+- **Market data fetched:** {state.get('market_data_as_of', 'Unknown')}
 
 ## Sources
-<details class="bg-gray-50 p-4 rounded border mt-2 cursor-pointer">
-<summary class="font-semibold text-gray-700">View Sources</summary>
-<ul class="list-disc pl-5 mt-2 text-gray-600 text-sm space-y-2">
-{sources_html}
+- **Annual report filed:** {filing.get('filing_date', 'Unknown')}
+- **Financial year ended:** {filing.get('report_date', 'Unknown')}
+- **SEC filing:** {filing.get('url', 'Unavailable')}
+
+<details>
+<summary>View supporting passages</summary>
+<ul>
+{sources}
 </ul>
 </details>
 """
 
-    return {"final_report": final_report}
+
+    warnings = state.get("data_warnings") or []
+    if warnings:
+        report += "\n## Data availability\n" + "\n".join(f"- {warning}" for warning in warnings)
+    report += "\n> Educational information only. This is not personalized financial advice or a buy/sell recommendation. Check important details against the linked filing.\n"
+    return {"final_report": report}

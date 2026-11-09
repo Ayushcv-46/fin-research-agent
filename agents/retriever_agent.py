@@ -10,9 +10,11 @@ def retriever_agent_node(state: dict) -> dict:
     """
     ticker = state["ticker"]
     query = state.get("current_query", state["question"])
+    filing_id = state.get("filing_id")
 
-    collection_name = f"ticker_{ticker.lower()}"
-    collection = vector_store._client.get_or_create_collection(name=collection_name)
+    collection = vector_store._client.get_or_create_collection(
+        name=vector_store._collection_name(ticker, filing_id)
+    )
     if collection.count() == 0:
         print(f"[retriever_agent] Collection for {ticker} is empty. Ingesting...")
         if not state.get("filing_text"):
@@ -22,11 +24,15 @@ def retriever_agent_node(state: dict) -> dict:
         filing_text = state.get("filing_text")
         if filing_text:
             embedded_chunks = chunk_filing(filing_text)
-            vector_store.ingest_filing(ticker, embedded_chunks)
+            vector_store.ingest_filing(ticker, embedded_chunks, filing_id, state.get("filing_metadata"))
         else:
             print(f"[retriever_agent] Failed to obtain filing_text for ingestion for {ticker}.")
 
-    chunks = vector_store.query_filing(ticker, query, top_k=5)
+    chunks = vector_store.query_filing(
+        ticker, query, top_k=5,
+        search_mode=state.get("search_mode", "dense"),
+        filing_id=filing_id,
+    )
 
     return {
         "retrieved_chunks": chunks,

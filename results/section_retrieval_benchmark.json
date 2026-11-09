@@ -1,0 +1,1110 @@
+{
+  "created_at": "2026-11-09T04:50:09.298868+00:00",
+  "label_type": "expected SEC section; not passage-level human relevance judgments",
+  "top_k": 5,
+  "summary": {
+    "dense": {
+      "queries": 24,
+      "section_recall_at_5": 0.417,
+      "mrr": 0.396
+    },
+    "bm25": {
+      "queries": 24,
+      "section_recall_at_5": 0.333,
+      "mrr": 0.264
+    },
+    "hybrid": {
+      "queries": 24,
+      "section_recall_at_5": 0.417,
+      "mrr": 0.344
+    }
+  },
+  "cases": {
+    "dense": [
+      {
+        "ticker": "AAPL",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1.",
+          "Item 1A.",
+          "Item 1.",
+          "Item 1.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 7.",
+          "Item 7.",
+          "Item 7.",
+          "Item 9A.",
+          "Item 9A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 9A.",
+          "Item 8.",
+          "Item 8.",
+          "Item 9A.",
+          "Item 15."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Describe the company's operating business and segments.",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Discuss management's analysis of results and liquidity.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 9A.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 9A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Describe the company's operations and services.",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1.",
+          "Item 1A.",
+          "Item 3.",
+          "Item 1A.",
+          "Item 1."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1.",
+          "Item 1A.",
+          "Item 1.",
+          "Item 1."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Discuss management's analysis of financial results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 3.",
+          "Item 3.",
+          "Item 3.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 3.",
+          "Item 3.",
+          "Item 1.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1.",
+          "Item 1.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 7.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 9A.",
+          "Item\u00a08."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 9A.",
+          "Item 9A.",
+          "Item\u00a015.",
+          "Item\u00a08.",
+          "Item 9A."
+        ],
+        "error": null
+      }
+    ],
+    "bm25": [
+      {
+        "ticker": "AAPL",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 8.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 9A.",
+          "Item 8.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 7.",
+          "Item 1A.",
+          "Item 7.",
+          "Item 1A.",
+          "Item 7."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 8.",
+          "Item 8.",
+          "Item 8.",
+          "Item 8.",
+          "Item 15."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Describe the company's operating business and segments.",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 9A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 9A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Discuss management's analysis of results and liquidity.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 9A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Describe the company's operations and services.",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 3.",
+          "Item 8.",
+          "Item 3.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 8.",
+          "Item 1A.",
+          "Item 3.",
+          "Item 1A.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Discuss management's analysis of financial results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 8.",
+          "Item 8.",
+          "Item 3.",
+          "Item 1.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 3.",
+          "Item 3.",
+          "Item 3.",
+          "Item 1."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 14.",
+          "Item 1A.",
+          "Item 1.",
+          "Item 1A.",
+          "Item 1."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 7.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item\u00a015.",
+          "Item\u00a09A.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item\u00a08."
+        ],
+        "error": null
+      }
+    ],
+    "hybrid": [
+      {
+        "ticker": "AAPL",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 8.",
+          "Item 1A.",
+          "Item 1.",
+          "Item 1."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 7.",
+          "Item 7.",
+          "Item 7.",
+          "Item 1A.",
+          "Item 8."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "AAPL",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 8.",
+          "Item 8.",
+          "Item 9A.",
+          "Item 8.",
+          "Item 8."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "MSFT",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Describe the company's operating business and segments.",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Discuss management's analysis of results and liquidity.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "XOM",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 9A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "GOOGL",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General",
+          "Item General"
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Describe the company's operations and services.",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 1.",
+          "Item 3.",
+          "Item 1A.",
+          "Item 1."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1.",
+          "Item 1.",
+          "Item 1.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Discuss management's analysis of financial results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 3.",
+          "Item 1.",
+          "Item 1A.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "WMT",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item 3.",
+          "Item 3.",
+          "Item 3.",
+          "Item 1.",
+          "Item 3."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "What products and services does the company sell?",
+        "expected_sections": [
+          "Item 1."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "What are the principal risks facing the business?",
+        "expected_sections": [
+          "Item 1A."
+        ],
+        "retrieved_sections": [
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item 1A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "Discuss management's analysis of revenue and operating results.",
+        "expected_sections": [
+          "Item 7."
+        ],
+        "retrieved_sections": [
+          "Item 7.",
+          "Item 9A.",
+          "Item 1A.",
+          "Item 1A.",
+          "Item\u00a09A."
+        ],
+        "error": null
+      },
+      {
+        "ticker": "NVDA",
+        "question": "Summarize the audited financial statements.",
+        "expected_sections": [
+          "Item 8."
+        ],
+        "retrieved_sections": [
+          "Item\u00a015.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item 9A.",
+          "Item\u00a08."
+        ],
+        "error": null
+      }
+    ]
+  }
+}

@@ -142,7 +142,7 @@ def judge_agent_node(state: dict) -> dict:
     retrieved_chunks = state.get("retrieved_chunks", [])
     prompt = build_judge_prompt(report_draft, retrieved_chunks)
 
-    if JUDGE_MODE == "finetuned":
+    if state.get("judge_mode", JUDGE_MODE) == "finetuned":
         return _judge_with_finetuned(prompt)
     else:
         return _judge_with_api(prompt)

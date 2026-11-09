@@ -13,15 +13,15 @@ from agents.report_agent import report_agent_node
 def route_after_confidence_check(state: dict) -> str:
     """
     Conditional edge decision function.
-    In fixed mode: scoring still runs but we always proceed (never retry).
+    In fixed mode: confidence scoring is skipped and the graph always proceeds.
     In adaptive mode: original Day 12 retry logic applies.
     """
     # Fixed mode — ignore the confidence label, always proceed
-    if os.environ.get("RETRIEVAL_MODE", "adaptive") == "fixed":
+    if state.get("retrieval_mode", os.environ.get("RETRIEVAL_MODE", "adaptive")) == "fixed":
         return "proceed"
 
     # Adaptive mode — original retry logic
-    label = state["confidence_label"]
+    label = state.get("confidence_label", "Ambiguous")
     retries = state.get("retry_count", 0)
 
     if label in ("Incorrect", "Ambiguous") and retries < 2:
@@ -47,6 +47,12 @@ class GraphState(TypedDict, total=False):
     filing_text: str
     judge_mode: str
     retrieval_mode: str
+    search_mode: str
+    filing_id: str
+    filing_metadata: dict
+    market_data_as_of: str
+    data_warnings: list
+    langsmith_tracing: bool
     # DEBUG: set True in tests to force Ambiguous on attempt 1 and verify retry loop
     _force_ambiguous_once: bool
 

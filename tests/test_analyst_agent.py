@@ -10,7 +10,7 @@ def _mock_llm_response(text: str):
 
 
 def test_analyst_valid_response():
-    good_json = '''{"bull_points": ["Strong margins (Section: Item 7.)"],
+    good_json = '''{"overview":"Margins improved.", "bull_points": ["Strong margins (Section: Item 7.)"],
                      "bear_points": [], "summary": "Neutral outlook.",
                      "citations": ["Item 7."]}'''
     with patch("agents.analyst_agent.llm") as mock_llm:
@@ -24,11 +24,13 @@ def test_analyst_valid_response():
 
         assert result["report_draft"]["summary"] == "Neutral outlook."
         assert len(result["report_draft"]["bull_points"]) == 1
+        assert "RESEARCH QUESTION" in mock_llm.invoke.call_args.args[0]
 
 
 def test_analyst_fenced_response():
     fenced_json = """```json
     {
+      "overview": "Revenue improved.",
       "bull_points": ["Solid revenue growth (Section: Item 7.)"],
       "bear_points": ["FX headwinds (Section: Item 1A.)"],
       "summary": "Balanced risk-reward profile.",
@@ -65,6 +67,7 @@ def test_analyst_prose_prefixed_response():
     prose_json = """Here is my financial analysis for the draft:
 ```json
 {
+  "overview": "Revenue improved.",
   "bull_points": ["Solid revenue growth (Section: Item 7.)"],
   "bear_points": ["FX headwinds (Section: Item 1A.)"],
   "summary": "Balanced risk-reward profile.",
@@ -86,7 +89,7 @@ I hope this helps!"""
 
 
 def test_analyst_retry_then_success():
-    good_json = '''{"bull_points": ["Strong margins (Section: Item 7.)"],
+    good_json = '''{"overview":"Margins improved.", "bull_points": ["Strong margins (Section: Item 7.)"],
                      "bear_points": [], "summary": "Neutral outlook.",
                      "citations": ["Item 7."]}'''
     with patch("agents.analyst_agent.llm") as mock_llm:

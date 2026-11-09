@@ -16,7 +16,7 @@ def test_streamed_accumulation_matches_invoke():
     """
     graph = build_graph()
 
-    mock_analyst_json = '{"bull_points": ["Strong growth (Section: Item 7.)"], "bear_points": [], "summary": "Positive.", "citations": ["Item 7."]}'
+    mock_analyst_json = '{"overview":"The company reports strong growth.", "bull_points": ["Strong growth (Section: Item 7.)"], "bear_points": [], "summary": "Positive.", "citations": ["Item 7."]}'
     mock_judge_json = '{"grounding": 9, "completeness": 8, "clarity": 9, "overall": 9, "flagged_issues": []}'
 
     initial_state = {
@@ -24,6 +24,7 @@ def test_streamed_accumulation_matches_invoke():
         "question": "How is Apple doing?",
         "current_query": "How is Apple doing?",
         "judge_mode": "api",
+        "market_data_as_of": "2026-01-01T00:00:00+00:00",
     }
 
     with patch.dict("os.environ", {"RETRIEVAL_MODE": "fixed"}), \
@@ -32,6 +33,7 @@ def test_streamed_accumulation_matches_invoke():
          patch("agents.data_agent.get_price_snapshot", return_value={"price": 200.0}), \
          patch("agents.data_agent.get_fundamentals", return_value={"pe_ratio": 25}), \
          patch("agents.data_agent.get_cik", return_value="0000320193"), \
+         patch("agents.data_agent.get_latest_10k_record", return_value={"html": "<html>10-K text</html>", "accession_number": "test-accession", "filing_date": "2026-01-01", "report_date": "2025-09-30", "form": "10-K", "url": "https://sec.test/filing"}), \
          patch("agents.data_agent.get_latest_10k", return_value="<html>10-K text</html>"), \
          patch("agents.data_agent.clean_filing_text", return_value="cleaned text"), \
          patch("agents.retriever_agent.vector_store._client") as mock_client, \

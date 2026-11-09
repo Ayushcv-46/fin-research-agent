@@ -18,7 +18,7 @@ def get_cik(ticker: str) -> str:
 
     url = "https://www.sec.gov/files/company_tickers.json"
     print(f"[get_cik] Fetching CIK mapping from {url}")
-    resp = requests.get(url, headers=HEADERS)
+    resp = requests.get(url, headers=HEADERS, timeout=30)
     print(f"[get_cik] Status code: {resp.status_code}")
     resp.raise_for_status()
     data = resp.json()
@@ -34,10 +34,10 @@ def get_cik(ticker: str) -> str:
     raise ValueError(f"Ticker {ticker} not found in EDGAR mapping")
 
 
-def get_latest_10k(cik: str) -> str:
+def get_latest_10k_record(cik: str) -> dict:
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     print(f"[get_latest_10k] Fetching submissions for CIK {cik} from {url}")
-    resp = requests.get(url, headers=HEADERS)
+    resp = requests.get(url, headers=HEADERS, timeout=30)
     print(f"[get_latest_10k] Status code: {resp.status_code}")
     resp.raise_for_status()
     data = resp.json()
@@ -58,20 +58,43 @@ def get_latest_10k(cik: str) -> str:
             )
             print(f"[get_latest_10k] Found 10-K at index {i}. Accession: {accessions[i]}, Document: {docs[i]}")
             print(f"[get_latest_10k] Fetching filing content from {doc_url}")
-            filing_resp = requests.get(doc_url, headers=HEADERS)
+            filing_resp = requests.get(doc_url, headers=HEADERS, timeout=30)
             print(f"[get_latest_10k] Status code: {filing_resp.status_code}")
             filing_resp.raise_for_status()
             print(f"[get_latest_10k] Successfully fetched filing text ({len(filing_resp.text)} chars)")
-            return filing_resp.text
+            filing_dates = recent.get("filingDate", [])
+            report_dates = recent.get("reportDate", [])
+            return {
+                "html": filing_resp.text,
+                "accession_number": accessions[i],
+                "filing_date": filing_dates[i] if i < len(filing_dates) else None,
+                "report_date": report_dates[i] if i < len(report_dates) else None,
+                "form": form,
+                "url": doc_url,
+            }
 
     print("[get_latest_10k] No 10-K found in recent filings")
     raise ValueError("No 10-K found in recent filings")
 
 
+def get_latest_10k(cik: str) -> str:
+    """Return the latest 10-K HTML for compatibility with existing callers."""
+    return get_latest_10k_record(cik)["html"]
+
+
 def clean_filing_text(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
 
-    for tag in soup(["script", "style", "table"]):
+    # Preserve financial statement data by flattening tables to readable rows.
+    for table in soup.find_all("table"):
+        rows = []
+        for row in table.find_all("tr"):
+            cells = [cell.get_text(" ", strip=True) for cell in row.find_all(["th", "td"])]
+            if any(cells):
+                rows.append(" | ".join(cells))
+        table.replace_with(soup.new_string("\n" + "\n".join(rows) + "\n"))
+
+    for tag in soup(["script", "style"]):
         tag.decompose()
 
     text = soup.get_text(separator="\n")
@@ -81,9 +104,7 @@ def clean_filing_text(html: str) -> str:
         line = line.strip()
         if not line:
             continue
-        # Drop XBRL/metadata junk: URLs, tag refs, or lines with no spaces
-        # (real sentences always contain spaces; XBRL refs don't)
-        if line.startswith("http") or " " not in line:
+        if line.startswith("http"):
             continue
         lines.append(line)
 
