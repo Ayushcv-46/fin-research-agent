@@ -1,6 +1,7 @@
 # Database session management
 import os
 from sqlalchemy import create_engine
+from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 from db.models import Base
 
@@ -21,5 +22,13 @@ engine = create_engine(
     connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {},
 )
 Base.metadata.create_all(engine)
+
+# Additive SQLite migration for the company-name field; existing report history
+# remains readable when users upgrade the local app/container.
+if DATABASE_URL.startswith("sqlite"):
+    with engine.begin() as connection:
+        columns = connection.execute(text("PRAGMA table_info(reports)")).fetchall()
+        if columns and "company_name" not in {column[1] for column in columns}:
+            connection.execute(text("ALTER TABLE reports ADD COLUMN company_name VARCHAR"))
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

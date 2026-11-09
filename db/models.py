@@ -10,6 +10,7 @@ class Report(Base):
 
     id = Column(Integer, primary_key=True)
     ticker = Column(String, nullable=False)
+    company_name = Column(String, nullable=True)
     question = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     final_report = Column(String)

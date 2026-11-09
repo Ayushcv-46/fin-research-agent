@@ -7,6 +7,7 @@ def test_save_report_with_none_judge_score():
     with patch("db.persistence.SessionLocal", return_value=mock_session):
         state = {
             "ticker": "AAPL",
+            "company_name": "Apple Inc.",
             "question": "How is AAPL doing?",
             "final_report": "Report text",
             "judge_score": None,
@@ -16,6 +17,7 @@ def test_save_report_with_none_judge_score():
         report = save_report(state)
 
         assert report.ticker == "AAPL"
+        assert report.company_name == "Apple Inc."
         assert report.overall == -1
         assert report.grounding == -1
         assert mock_session.add.called

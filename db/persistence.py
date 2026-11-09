@@ -8,6 +8,7 @@ def save_report(graph_state: dict) -> Report:
 
     report = Report(
         ticker=graph_state.get("ticker"),
+        company_name=graph_state.get("company_name"),
         question=graph_state.get("question"),
         final_report=graph_state.get("final_report"),
         grounding=judge_score.get("grounding", -1),
@@ -40,3 +41,19 @@ def get_report_by_id(report_id: int) -> Report | None:
         return session.query(Report).filter(Report.id == report_id).first()
     finally:
         session.close()
+
+
+def report_payload(report: Report) -> dict:
+    """Return stable fields used by history/details responses."""
+    return {
+        "id": report.id,
+        "ticker": report.ticker,
+        "company_name": getattr(report, "company_name", None),
+        "question": report.question,
+        "timestamp": report.timestamp,
+        "final_report": report.final_report,
+        "grounding": report.grounding,
+        "completeness": report.completeness,
+        "clarity": report.clarity,
+        "overall": report.overall,
+    }
