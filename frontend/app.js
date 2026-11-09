@@ -1,288 +1,172 @@
-const form        = document.getElementById("report-form");
-const submitBtn   = document.getElementById("submit-btn");
+const form = document.getElementById("report-form");
+const submitBtn = document.getElementById("submit-btn");
 const progressDiv = document.getElementById("progress");
-const reportDiv   = document.getElementById("report-output");
+const reportDiv = document.getElementById("report-output");
 const historyList = document.getElementById("history-list");
-let currentReportData = null;
-
-// API base: empty string when served from FastAPI/Docker (port 8000), explicit when using Live Server (port 5500)
+const companySearch = document.getElementById("company-search");
+const companyResults = document.getElementById("company-results");
+const selectedCompany = document.getElementById("selected-company");
 const API_BASE = window.location.port === "5500" ? "http://localhost:8000" : "";
+let selectedCompanyData = null;
+let searchTimer = null;
 
-// ---- Judge mode helper ----
-function getJudgeMode() {
-  const checked = document.querySelector('input[name="judge_mode"]:checked');
-  return checked ? checked.value : "api";
-}
-
-// ---- Utility ----
 function escapeHtml(value) {
-  if (typeof value !== "string") return value;
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  if (typeof value !== "string") return value ?? "";
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 function relativeTime(iso) {
   if (!iso) return "";
-  const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
-  if (diff < 60)  return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  const seconds = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function scoreClass(v) {
-  if (v == null || v === -1) return "score-na";
-  if (v >= 8)  return "score-hi";
-  if (v >= 5)  return "score-mid";
-  return "score-lo";
-}
-
-function scoreLabel(v) {
-  if (v == null || v === -1) return "N/A";
-  return `${v}/10`;
-}
-
-// ---- History ----
 async function fetchHistory() {
   try {
-    const res = await fetch(`${API_BASE}/reports`);
-    if (!res.ok) throw new Error();
-    renderHistory(await res.json());
+    const response = await fetch(`${API_BASE}/reports`);
+    if (!response.ok) throw new Error("History unavailable");
+    const reports = await response.json();
+    if (!reports.length) { historyList.innerHTML = `<p class="sidebar-empty">No reports yet.</p>`; return; }
+    historyList.innerHTML = reports.map(report => `
+      <div class="history-item" data-id="${report.id}" tabindex="0" role="button">
+        <div class="history-ticker">${escapeHtml(report.company_name || report.ticker)} <small>${escapeHtml(report.ticker)}</small></div>
+        <div class="history-question">${escapeHtml(report.question)}</div>
+        <div class="history-time">${relativeTime(report.timestamp)}</div>
+      </div>`).join("");
+    historyList.querySelectorAll(".history-item").forEach(item => {
+      item.addEventListener("click", () => loadReport(item.dataset.id));
+      item.addEventListener("keydown", event => { if (event.key === "Enter") loadReport(item.dataset.id); });
+    });
   } catch {
-    historyList.innerHTML = `<p class="sidebar-error">Failed to load history.</p>`;
+    historyList.innerHTML = `<p class="sidebar-error">Could not load saved reports.</p>`;
   }
 }
 
-function renderHistory(reports) {
-  if (!reports || reports.length === 0) {
-    historyList.innerHTML = `<p class="sidebar-empty">No reports yet.</p>`;
-    return;
-  }
-  historyList.innerHTML = reports.map(r => `
-    <div class="history-item" data-id="${r.id}" tabindex="0" role="button">
-      <div class="history-item-top">
-        <span class="history-ticker">${escapeHtml(r.ticker)}</span>
-        <span class="history-score ${scoreClass(r.overall)}">${scoreLabel(r.overall)}</span>
-      </div>
-      <div class="history-question">${escapeHtml(r.question)}</div>
-      <div class="history-time">${relativeTime(r.timestamp)}</div>
-    </div>
-  `).join("");
-
-  historyList.querySelectorAll(".history-item").forEach(el => {
-    el.addEventListener("click",  () => loadReport(el.dataset.id));
-    el.addEventListener("keydown", e => { if (e.key === "Enter") loadReport(el.dataset.id); });
-  });
-}
-
-// ---- Load saved report ----
 async function loadReport(id) {
   try {
-    const res = await fetch(`${API_BASE}/reports/${id}`);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    data.judge_score = {
-      grounding:    data.grounding,
-      completeness: data.completeness,
-      clarity:      data.clarity,
-      overall:      data.overall,
-      flagged_issues: []
-    };
+    const response = await fetch(`${API_BASE}/reports/${id}`);
+    if (!response.ok) throw new Error();
+    const data = await response.json();
+    data.judge_score = null; // Historical DB does not persist detailed quality metadata.
     progressDiv.innerHTML = "";
     renderReport(data);
-  } catch {
-    alert("Could not load report.");
-  }
+  } catch { alert("Could not load this report."); }
 }
 
-// ---- Re-run with alternate judge ----
-function reRunJudge(ticker, question, mode) {
-  document.getElementById("ticker").value   = ticker;
-  document.getElementById("question").value = question;
-  const radio = document.querySelector(`input[name="judge_mode"][value="${mode}"]`);
-  if (radio) radio.checked = true;
-  form.dispatchEvent(new Event("submit"));
-}
-window.reRunJudge = reRunJudge;
-
-// ---- Render score bar ----
-function scoreBar(label, value) {
-  const pct  = value != null && value !== -1 ? (value / 10) * 100 : 0;
-  const cls  = value >= 8 ? "high" : value >= 5 ? "mid" : "low";
-  const text = value != null && value !== -1 ? `${value}/10` : "—";
-  return `
-    <div class="score-bar-row">
-      <span class="score-bar-label">${label}</span>
-      <div class="score-bar-track">
-        <div class="score-bar-fill ${cls}" style="width:${pct}%"></div>
-      </div>
-      <span class="score-bar-value">${text}</span>
-    </div>`;
-}
-
-// ---- Render full report ----
 function renderReport(data) {
-  currentReportData = data;
-  const safeTicker   = escapeHtml(data.ticker   || "—");
-  const safeQuestion = escapeHtml(data.question || "");
-  const currentMode  = data.judge_mode || getJudgeMode();
-  const otherMode    = currentMode === "api" ? "finetuned" : "api";
-
-  const rawReport  = data.final_report || "No report generated.";
-  const reportHtml = (typeof marked !== "undefined" && marked.parse)
-    ? marked.parse(rawReport)
-    : `<pre style="white-space:pre-wrap">${escapeHtml(rawReport)}</pre>`;
-
-  // Metric cards
-  const price   = data.price_data?.current_price    ?? null;
-  const hi52    = data.price_data?.fifty_two_week_high ?? null;
-  const lo52    = data.price_data?.fifty_two_week_low  ?? null;
-  const pe      = data.fundamentals?.pe_ratio         ?? null;
-  const mktcap  = data.fundamentals?.market_cap        ?? null;
-
-  const fmt = v => v != null ? v : "—";
-  const fmtPrice = v => v != null ? `$${Number(v).toLocaleString()}` : "—";
-
-  const metricsHtml = `
-    <div class="metric-grid">
-      <div class="metric-cell">
-        <div class="metric-label">Price</div>
-        <div class="metric-value">${fmtPrice(price)}</div>
-      </div>
-      <div class="metric-cell">
-        <div class="metric-label">52W High</div>
-        <div class="metric-value">${fmtPrice(hi52)}</div>
-      </div>
-      <div class="metric-cell">
-        <div class="metric-label">52W Low</div>
-        <div class="metric-value">${fmtPrice(lo52)}</div>
-      </div>
-      <div class="metric-cell">
-        <div class="metric-label">P/E Ratio</div>
-        <div class="metric-value">${fmt(pe)}</div>
-        <div class="metric-sub">${mktcap ? `Cap: ${mktcap}` : ""}</div>
-      </div>
-    </div>`;
-
-  // Judge panel
-  const judgeScore = data.judge_score;
-  const hasScores  = judgeScore && judgeScore.overall != null && judgeScore.overall !== -1;
-
-  const judgeHtml = hasScores ? `
-    <div class="judge-section">
-      <div class="judge-title">Quality Assessment — ${escapeHtml(currentMode)} judge</div>
-      <div class="overall-score">
-        <span class="overall-score-num">${judgeScore.overall}</span>
-        <span class="overall-score-denom">/10</span>
-        <span class="overall-score-label">Overall Score</span>
-      </div>
-      ${scoreBar("Grounding",    judgeScore.grounding)}
-      ${scoreBar("Completeness", judgeScore.completeness)}
-      ${scoreBar("Clarity",      judgeScore.clarity)}
-      <button id="rerun-judge-btn" class="btn-rerun" type="button">
-        Re-run with ${otherMode} judge
-      </button>
-    </div>` :
-    `<div class="judge-section"><div class="judge-unavailable">Judge evaluation unavailable for this report.</div></div>`;
-
+  const report = data.final_report || "No report was generated.";
+  const rendered = typeof marked !== "undefined" && marked.parse
+    ? marked.parse(report)
+    : `<pre>${escapeHtml(report)}</pre>`;
+  const quality = data.judge_score ? `<details class="quality-details"><summary>Automated report quality checks (not an investment rating)</summary><p>Grounding ${data.judge_score.grounding ?? "—"}/10 · Evidence coverage ${data.judge_score.completeness ?? "—"}/10 · Clarity ${data.judge_score.clarity ?? "—"}/10. These fallible model checks do not assess whether an investment is suitable.</p></details>` : "";
+  const warnings = (data.data_warnings || []).map(item => `<li>${escapeHtml(item)}</li>`).join("");
   reportDiv.innerHTML = `
     <div class="card report-card">
       <div class="report-header">
-        <div class="report-ticker">${safeTicker}</div>
-        <div class="report-question">${safeQuestion}</div>
+        <div class="report-ticker">${escapeHtml(data.company_name || data.ticker || "Company")}</div>
+        <div class="report-question">${escapeHtml(data.question || "")}</div>
       </div>
-      ${metricsHtml}
+      ${data.langsmith_tracing ? `<div class="trace-meta">LangSmith tracing is on for this run.${data.langsmith_trace_url ? ` <a href="${escapeHtml(data.langsmith_trace_url)}" target="_blank" rel="noopener noreferrer">Open trace</a>` : " Check the configured LangSmith project for the run."}</div>` : ""}
+      <div class="report-meta">Ticker: ${escapeHtml(data.ticker || "—")} · Latest annual report filed ${escapeHtml(data.filing_metadata?.filing_date || "date unavailable")}</div>
       <div class="report-divider"></div>
-      <div class="report-body">
-        <div class="prose">${reportHtml}</div>
-      </div>
-      ${judgeHtml}
+      <div class="report-body"><div class="prose">${rendered}</div>${warnings ? `<div class="data-warning"><strong>Data availability</strong><ul>${warnings}</ul></div>` : ""}</div>
+      ${quality}
     </div>`;
-
-  const rerunBtn = document.getElementById("rerun-judge-btn");
-  if (rerunBtn) rerunBtn.addEventListener("click", () => reRunJudge(data.ticker, data.question, otherMode));
-
   reportDiv.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// ---- Pipeline stage label map ----
-const STAGE_LABELS = {
-  data:             "Fetching SEC filing & market data",
-  retriever:        "Searching vector store for relevant chunks",
-  confidence_check: "Evaluating retrieval confidence",
-  retry_retrieval:  "Retrying retrieval with refined query",
-  analyst:          "Synthesizing financial analysis",
-  judge:            "Running judge evaluation",
-  report:           "Formatting final report",
+const stageLabels = {
+  data: "Getting company filing and market information",
+  retriever: "Finding relevant evidence in the annual report",
+  confidence_check: "Checking whether the evidence answers your question",
+  retry_retrieval: "Looking for additional evidence",
+  analyst: "Preparing a plain-language explanation",
+  judge: "Checking report quality",
+  report: "Preparing your company summary",
 };
 
-// ---- Form submit ----
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const tickerInput    = document.getElementById("ticker");
-  const questionInput  = document.getElementById("question");
-
-  const ticker   = (tickerInput.value.trim()   || tickerInput.placeholder).toUpperCase();
-  const question = (questionInput.value.trim()  || questionInput.placeholder);
-  const judgeMode = getJudgeMode();
-
-  if (!ticker) { alert("Please enter a valid ticker symbol."); return; }
-
-  tickerInput.value  = ticker;
-  questionInput.value = question;
-
-  // UI: loading state
+form.addEventListener("submit", event => {
+  event.preventDefault();
+  if (!selectedCompanyData) { alert("Search for a company and select one of the suggestions."); companySearch.focus(); return; }
+  const question = document.getElementById("question").value.trim();
+  if (!question) { alert("Choose a question or type what you would like to know."); return; }
   submitBtn.disabled = true;
   submitBtn.classList.add("loading");
   progressDiv.innerHTML = "";
-  reportDiv.innerHTML   = "";
-
-  const url = `${API_BASE}/report/stream?ticker=${encodeURIComponent(ticker)}&question=${encodeURIComponent(question)}&judge_mode=${encodeURIComponent(judgeMode)}`;
-  const eventSource = new EventSource(url);
-
-  eventSource.addEventListener("stage", function (event) {
-    const d     = JSON.parse(event.data);
-    const label = STAGE_LABELS[d.stage] || d.message || d.stage;
-    const step  = document.createElement("div");
-    step.className = "pipeline-step";
-    step.innerHTML = `
-      <div class="pipeline-step-icon">
-        <svg fill="none" viewBox="0 0 10 10" stroke="#2563eb" stroke-width="1.8">
-          <polyline points="1,6 4,9 9,2"/>
-        </svg>
-      </div>
-      <span class="pipeline-step-label">${escapeHtml(label)}</span>`;
-    progressDiv.appendChild(step);
+  reportDiv.innerHTML = "";
+  const searchMode = document.getElementById("search-mode").value;
+  const retrievalMode = document.getElementById("retrieval-mode").value;
+  const langsmithTracing = document.getElementById("langsmith-tracing").checked;
+  const params = new URLSearchParams({ ticker: selectedCompanyData.ticker, company_name: selectedCompanyData.name,
+    question, judge_mode: "api", search_mode: searchMode, retrieval_mode: retrievalMode,
+    langsmith_tracing: String(langsmithTracing) });
+  const source = new EventSource(`${API_BASE}/report/stream?${params}`);
+  source.addEventListener("stage", event => {
+    const detail = JSON.parse(event.data);
+    const row = document.createElement("div");
+    row.className = "pipeline-step";
+    row.textContent = stageLabels[detail.stage] || detail.message || detail.stage;
+    progressDiv.appendChild(row);
   });
-
-  eventSource.addEventListener("complete", function (event) {
-    const d = JSON.parse(event.data);
-    d.judge_mode = judgeMode;
-    renderReport(d);
+  source.addEventListener("complete", event => {
+    renderReport(JSON.parse(event.data));
     fetchHistory();
-    eventSource.close();
+    source.close();
     submitBtn.disabled = false;
     submitBtn.classList.remove("loading");
   });
-
-  eventSource.addEventListener("error", function (event) {
-    if (!event.data) { console.error(event); return; }
-    let message = "An error occurred during analysis. Please try again.";
-    try { const p = JSON.parse(event.data); if (p.message) message = p.message; } catch {}
-    const errDiv = document.createElement("div");
-    errDiv.className = "error-step";
-    errDiv.textContent = message;
-    progressDiv.appendChild(errDiv);
-    eventSource.close();
+  source.addEventListener("error", event => {
+    if (event.data) {
+      let message = "Something went wrong while preparing the company summary.";
+      try { message = JSON.parse(event.data).message || message; } catch {}
+      const row = document.createElement("div"); row.className = "error-step"; row.textContent = message; progressDiv.appendChild(row);
+    }
+    source.close();
     submitBtn.disabled = false;
     submitBtn.classList.remove("loading");
   });
 });
 
-// ---- Init ----
+companySearch.addEventListener("input", () => {
+  selectedCompanyData = null;
+  selectedCompany.textContent = "";
+  const query = companySearch.value.trim();
+  clearTimeout(searchTimer);
+  if (query.length < 2) { companyResults.style.display = "none"; return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const response = await fetch(`${API_BASE}/companies/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error();
+      const matches = await response.json();
+      companyResults.innerHTML = matches.map((company, index) => `<div class="company-option" role="option" data-index="${index}">${escapeHtml(company.name)}<small>${escapeHtml(company.ticker)}</small></div>`).join("") || `<div class="company-option">No matching companies found</div>`;
+      companyResults.style.display = "block";
+      companyResults.setAttribute("aria-expanded", "true");
+      companyResults.querySelectorAll("[data-index]").forEach(option => option.addEventListener("click", () => {
+        selectedCompanyData = matches[Number(option.dataset.index)];
+        companySearch.value = selectedCompanyData.name;
+        selectedCompany.textContent = `Selected: ${selectedCompanyData.name} (${selectedCompanyData.ticker})`;
+        companyResults.style.display = "none";
+        companyResults.setAttribute("aria-expanded", "false");
+      }));
+    } catch {
+      companyResults.innerHTML = `<div class="company-option">Company search is temporarily unavailable.</div>`;
+      companyResults.style.display = "block";
+    }
+  }, 250);
+});
+
+document.addEventListener("click", event => { if (!event.target.closest(".company-search")) companyResults.style.display = "none"; });
+
+document.querySelectorAll(".question-choice").forEach(button => button.addEventListener("click", () => {
+  document.querySelectorAll(".question-choice").forEach(choice => choice.classList.remove("active"));
+  button.classList.add("active");
+  const input = document.getElementById("question");
+  if (button.dataset.question) input.value = button.dataset.question;
+  else { input.value = ""; input.placeholder = "Type your question in plain language"; input.focus(); }
+}));
+
 fetchHistory();

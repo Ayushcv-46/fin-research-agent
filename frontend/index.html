@@ -179,11 +179,32 @@
     }
     input::placeholder { color: var(--gray-400); }
 
-    .input-row {
-      display: grid;
-      grid-template-columns: 130px 1fr;
-      gap: 10px;
-    }
+    .company-search { position: relative; }
+    .company-results { position: absolute; z-index: 20; left: 0; right: 0; top: 44px; background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); box-shadow: var(--shadow-md); max-height: 280px; overflow: auto; display: none; }
+    .company-option { padding: 10px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--gray-100); }
+    .company-option:hover, .company-option.active { background: var(--blue-light); }
+    .company-option small { color: var(--gray-500); margin-left: 6px; }
+    .selected-company { margin-top: 8px; font-size: 13px; color: var(--green); font-weight: 600; }
+    .coverage-note { margin-top: 9px; padding: 10px 12px; border: 1px solid var(--blue-mid); border-radius: var(--radius); background: var(--blue-light); color: var(--gray-600); font-size: 12px; line-height: 1.5; }
+    .question-help { color: var(--gray-500); font-size: 12px; margin-top: -9px; margin-bottom: 10px; }
+    .question-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+    .question-choice { min-height: 48px; border: 1px solid var(--gray-300); background: white; border-radius: 10px; padding: 11px 14px; font-size: 13px; line-height: 1.4; text-align: left; cursor: pointer; color: var(--gray-700); transition: border-color var(--transition), background var(--transition), box-shadow var(--transition); }
+    .question-choice::after { content: '›'; float: right; margin-left: 8px; font-size: 18px; line-height: 1; color: var(--gray-400); }
+    .question-choice:hover, .question-choice.active { border-color: var(--blue); color: var(--blue); background: var(--blue-light); box-shadow: 0 0 0 2px rgba(37,99,235,0.08); }
+    .question-choice.active::after { color: var(--blue); }
+    .question-choice:last-child { border-style: dashed; font-weight: 600; }
+    details.advanced { margin-top: 16px; border: 1px solid var(--blue-mid); border-radius: 10px; background: #f8fbff; overflow: hidden; }
+    details.advanced summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; padding: 13px 15px; color: var(--blue); font-size: 14px; font-weight: 600; }
+    details.advanced summary::-webkit-details-marker { display: none; }
+    details.advanced summary::after { content: '+'; display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--blue-mid); border-radius: 50%; font-size: 18px; }
+    details.advanced[open] summary::after { content: '−'; }
+    .advanced-hint { display: block; margin-left: auto; color: var(--gray-500); font-size: 11px; font-weight: 400; }
+    .advanced-body { padding: 14px 15px 2px; border-top: 1px solid var(--blue-mid); }
+    .developer-option { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0 14px; padding: 13px; border: 1px solid var(--gray-200); border-radius: var(--radius); background: #fff; }
+    .developer-option input { width: 17px; height: 17px; margin-top: 1px; accent-color: var(--blue); flex: 0 0 auto; }
+    .developer-option label { margin: 0; color: var(--gray-800); font-size: 13px; letter-spacing: 0; text-transform: none; cursor: pointer; }
+    .developer-option p { margin-top: 4px; color: var(--gray-500); font-size: 11px; font-weight: 400; line-height: 1.5; }
+    @media (max-width: 600px) { .question-choices { grid-template-columns: 1fr; } .advanced-hint { display: none; } }
 
     /* Judge mode toggle */
     .toggle-group {
@@ -293,6 +314,18 @@
       color: var(--gray-500);
       margin-top: 3px;
     }
+    .report-meta { margin: 8px 24px 0; color: var(--gray-500); font-size: 12px; }
+    .trace-meta { margin: 10px 24px 0; padding: 9px 11px; border-radius: var(--radius); color: #1e40af; background: var(--blue-light); font-size: 12px; }
+    .trace-meta a { font-weight: 600; }
+    .metric-note { margin: -8px 24px 16px; color: var(--gray-500); font-size: 11px; }
+    .market-details { border-top: 1px solid var(--gray-100); padding-top: 12px; }
+    .market-details summary { cursor: pointer; padding: 10px 24px; color: var(--gray-600); font-size: 13px; font-weight: 600; }
+    .market-details[open] .metric-grid { margin-top: 6px; }
+    .quality-details { margin: 0 24px 18px; padding: 12px; background: var(--gray-50); border-radius: var(--radius); color: var(--gray-600); font-size: 12px; }
+    .quality-details summary { cursor: pointer; font-weight: 600; }
+    .quality-details p { margin-top: 8px; }
+    .data-warning { margin: 0 0 16px; padding: 12px; border-radius: var(--radius); color: #92400e; background: var(--amber-light); font-size: 13px; }
+    .data-warning ul { padding-left: 18px; }
 
     .metric-grid {
       display: grid;
@@ -433,7 +466,7 @@
       <span class="topbar-badge">AI</span>
     </a>
     <div class="topbar-right">
-      <span class="status-dot">System Online</span>
+      <span class="status-dot">Company research</span>
     </div>
   </header>
 
@@ -446,34 +479,55 @@
       <!-- Input Card -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">New Research Query</span>
+          <span class="card-title">Understand a company</span>
         </div>
         <div class="card-body">
           <form id="report-form">
 
-            <div class="input-row form-group">
-              <div>
-                <label for="ticker">Ticker</label>
-                <input type="text" id="ticker" placeholder="AAPL" maxlength="10" autocomplete="off" spellcheck="false">
-              </div>
-              <div>
-                <label for="question">Research Question</label>
-                <input type="text" id="question" placeholder="What is the company's growth outlook?" autocomplete="off">
-              </div>
+            <div class="form-group company-search">
+              <label for="company-search">Which company would you like to learn about?</label>
+              <input type="text" id="company-search" placeholder="Search by company name, e.g. Disney" autocomplete="off" aria-autocomplete="list" aria-expanded="false">
+              <div id="company-results" class="company-results" role="listbox"></div>
+              <div class="coverage-note"><strong>Coverage:</strong> This tool is designed for U.S. companies with SEC filings. Companies listed only on Indian or other foreign exchanges are not supported yet.</div>
+              <div id="selected-company" class="selected-company" aria-live="polite"></div>
             </div>
 
             <div class="form-group">
-              <label>Judge Mode</label>
-              <div class="toggle-group">
-                <input type="radio" name="judge_mode" id="mode-api" value="api" checked>
-                <label for="mode-api">API Judge</label>
-                <input type="radio" name="judge_mode" id="mode-finetuned" value="finetuned">
-                <label for="mode-finetuned">Fine-tuned Judge</label>
+              <label>What would you like to know?</label>
+              <div class="question-help">Choose a topic below, or write your own question.</div>
+              <div class="question-choices" id="question-choices">
+                <button class="question-choice active" type="button" data-question="Give me a simple overview of what this company does and how it makes money.">Company overview</button>
+                <button class="question-choice" type="button" data-question="What are this company's main products and services, and who buys them?">Products and customers</button>
+                <button class="question-choice" type="button" data-question="What are the company's main risks and strengths based on its latest annual report?">Risks and strengths</button>
+                <button class="question-choice" type="button" data-question="Explain the company's recent financial performance in plain language.">Financial performance</button>
+                <button class="question-choice" type="button" data-question="">Ask my own question</button>
               </div>
+              <input type="text" id="question" value="Give me a simple overview of what this company does and how it makes money." maxlength="500" autocomplete="off" style="margin-top:10px" aria-label="Research question">
             </div>
 
+            <details class="advanced">
+              <summary><span>Advanced settings</span><span class="advanced-hint">Optional · customize how the app searches</span></summary>
+              <div class="advanced-body">
+                <div class="form-group">
+                  <label for="search-mode">How the app searches</label>
+                  <select id="search-mode"><option value="hybrid" selected>Recommended (combined search)</option><option value="dense">Meaning-based search</option><option value="bm25">Keyword search</option></select>
+                </div>
+                <div class="form-group">
+                  <label for="retrieval-mode">Search strategy</label>
+                  <select id="retrieval-mode"><option value="fixed" selected>Standard</option><option value="adaptive">Try again if evidence is weak</option></select>
+                </div>
+                <div class="developer-option">
+                  <input type="checkbox" id="langsmith-tracing">
+                  <div>
+                    <label for="langsmith-tracing">Trace this run with LangSmith</label>
+                    <p>Optional developer tool. Sends the question, retrieved filing passages, and generated report to your configured LangSmith workspace. Requires a LangSmith API key in .env. Off by default.</p>
+                  </div>
+                </div>
+              </div>
+            </details>
+
             <button id="submit-btn" type="submit" class="btn-primary">
-              <span class="btn-text">Run Analysis</span>
+              <span class="btn-text">Explain this company</span>
               <div class="btn-spinner"></div>
             </button>
 
