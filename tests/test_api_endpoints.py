@@ -27,6 +27,8 @@ def test_report_endpoint_excludes_filing_text():
             "ticker": "AAPL",
             "question": "What is the outlook?",
             "judge_mode": "api",
+            "search_mode": "hybrid",
+            "retrieval_mode": "fixed",
         })
 
     assert response.status_code == 200
@@ -37,6 +39,7 @@ def test_report_endpoint_excludes_filing_text():
     assert data["final_report"] == "Report content here"
     assert data["judge_score"] == {"overall": 10}
     assert data["retry_count"] == 0
+    assert data["search_mode"] == "hybrid"
 
 
 def test_invalid_judge_mode_returns_422_post():
@@ -55,6 +58,12 @@ def test_invalid_judge_mode_returns_422_stream():
     assert response.status_code == 422
 
 
+def test_finetuned_judge_reports_missing_optional_runtime():
+    response = client.post("/report", json={"ticker": "AAPL", "question": "outlook", "judge_mode": "finetuned"})
+    assert response.status_code == 422
+    assert "CUDA/Unsloth" in response.json()["detail"]
+
+
 def test_empty_question_returns_422():
     """Verify that an empty question fails min_length validation with 422."""
     response = client.post("/report", json={
@@ -63,3 +72,30 @@ def test_empty_question_returns_422():
         "judge_mode": "api",
     })
     assert response.status_code == 422
+
+
+def test_invalid_search_mode_returns_422():
+    response = client.post("/report", json={"ticker": "AAPL", "question": "outlook", "search_mode": "unknown"})
+    assert response.status_code == 422
+
+
+def test_company_name_must_be_selected_from_directory():
+    with patch("app.main._get_company_directory", return_value=[{"ticker": "DIS", "name": "The Walt Disney Company", "cik": "0001744489"}]):
+        response = client.post("/report", json={"company_name": "Disney Corporation", "question": "What does this company do?"})
+    assert response.status_code == 422
+
+
+def test_company_search_prefers_exact_ticker():
+    companies = [
+        {"ticker": "A", "name": "A Example Holdings"},
+        {"ticker": "AA", "name": "AA Example Inc"},
+    ]
+    with patch("app.main._get_company_directory", return_value=companies):
+        response = client.get("/companies/search?q=AA")
+    assert response.status_code == 200
+    assert response.json()[0]["ticker"] == "AA"
+
+
+def test_ticker_validation_accepts_sec_class_share_tickers():
+    from app.main import validate_ticker
+    assert validate_ticker("brk.b") == "BRK.B"
