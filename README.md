@@ -84,7 +84,7 @@ flowchart LR
     D -->|filing text + market snapshot| R[Retriever Agent]
     R --> C[Item-aware chunker]
     C --> E[Sentence Transformers: all-MiniLM-L6-v2]
-    E --> V[(ChromaDB per-ticker collection)]
+    E --> V[(ChromaDB filing-accession collection)]
     R --> V
     V -->|top 5 chunks| Q[Confidence scorer]
     Q -->|Incorrect / Ambiguous, adaptive, retries < 2| RR[Query reformulation]
@@ -155,7 +155,7 @@ flowchart LR
     F[Cleaned 10-K] --> S[Split by Item headers]
     S --> C[512-word chunks, 50-word overlap]
     C --> E[MiniLM embeddings]
-    E --> DB[(Chroma per ticker)]
+    E --> DB[(Chroma per filing accession)]
     Q[Question / current query] --> QE[Query embedding]
     QE --> DB
     DB -->|up to 5 chunks| CS[LLM confidence label]
@@ -226,7 +226,7 @@ The browser uses `EventSource` for this streaming endpoint. The frontend is moun
 | Orchestration | LangGraph, LangChain | Stateful graph and LLM integration. |
 | LLM | Gemini API via `langchain-openai` `ChatOpenAI` compatibility endpoint | Query reformulation, confidence scoring, analysis, and API Judge. |
 | Embeddings | Sentence Transformers `all-MiniLM-L6-v2` | Local chunk and query embeddings. |
-| Vector store | ChromaDB persistent client | Per-ticker embedding index and nearest-neighbor search. |
+| Vector store | ChromaDB persistent client | Filing-accession-scoped embedding index and nearest-neighbor search. |
 | Data sources | SEC EDGAR, `yfinance` | 10-K filing text and separate market/fundamental data. |
 | Backend and streaming | FastAPI, Uvicorn, SSE | HTTP endpoints, event stream, static frontend serving. |
 | Frontend | HTML, CSS, JavaScript, Marked | Research form, progress, report display, history. |
@@ -399,14 +399,14 @@ There are no application screenshots or demo GIFs in the repository. Add genuine
 
 - **Graph nodes with shared typed state:** makes stage boundaries and the retrieval conditional edge explicit and testable.
 - **Fixed and adaptive retrieval modes:** supports a simple baseline alongside an LLM-directed retry experiment.
-- **Persistent per-ticker embeddings plus cached upstream data:** avoids repeating filing preparation and network calls on every warm query, with a freshness trade-off for the vector collection.
+- **Persistent filing-accession embeddings plus cached upstream data:** avoids repeating filing preparation and network calls on every warm query, with a freshness trade-off for the vector collection.
 - **SSE for long operations:** lets the browser show graph-stage progress without waiting for the final report; graph output is accumulated once during streaming and then persisted.
-- **Separate API and adapter Judge implementations:** enables an experimental comparison behind one scoring schema, while request-vs-startup mode selection remains a known gap.
+- **Request-scoped Judge selection:** lets each request select the Gemini API Judge; fine-tuned Judge selection is not supported by the standard API deployment and returns HTTP 422 without the optional CUDA/Unsloth setup.
 - **SQLite report history:** keeps local setup simple and provides a basic retrieval history for the UI.
 
 ## Future work
 
-- Add filing-date/version metadata and refresh stale ticker collections.
+- Add filing-date/version metadata and refresh stale filing collections.
 - Improve section-aware extraction and evidence-level citations with links to filing locations.
 - Evaluate retrieval with more reliable, repeatable measures and calibrate confidence decisions.
 - Ground or label market data with provider and observation timestamps.
